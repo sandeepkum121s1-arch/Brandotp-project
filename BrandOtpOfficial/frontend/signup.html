@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Signup - BrandOtp</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .signup-container {
+            background: white;
+            padding: 40px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            width: 100%;
+            max-width: 400px;
+        }
+        .title {
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 2rem;
+            color: #333;
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #555;
+        }
+        input {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 1rem;
+        }
+        input:focus {
+            outline: none;
+            border-color: #4361ee;
+        }
+        .signup-btn {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+        }
+        .signup-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+        .message {
+            padding: 10px;
+            margin-bottom: 20px;
+            border-radius: 5px;
+            display: none;
+        }
+        .message.error {
+            background: #f8d7da;
+            color: #721c24;
+        }
+        .message.success {
+            background: #d4edda;
+            color: #155724;
+        }
+        .login-link {
+            text-align: center;
+            margin-top: 20px;
+        }
+        .login-link a {
+            color: #4361ee;
+            text-decoration: none;
+            font-weight: 600;
+        }
+    </style>
+</head>
+<body>
+    <div class="signup-container">
+        <h1 class="title">📝 Sign Up</h1>
+        
+        <div id="message" class="message"></div>
+        
+        <form id="signupForm">
+            <div class="form-group">
+                <label for="username">Username</label>
+                <input type="text" id="username" name="username" required>
+            </div>
+
+            <div class="form-group">
+                <label for="email">Email Address</label>
+                <input type="email" id="email" name="email" required>
+            </div>
+
+            <div class="form-group">
+                <label for="password">Password (min 4 chars)</label>
+                <input type="password" id="password" name="password" required>
+            </div>
+
+            <button type="submit" class="signup-btn" id="signupBtn">
+                Create Account
+            </button>
+        </form>
+
+        <div class="login-link">
+            Already have an account? <a href="/login">Login here</a>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('signupForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const username = document.getElementById('username').value.trim();
+            const email = document.getElementById('email').value.trim();
+            const password = document.getElementById('password').value;
+            const signupBtn = document.getElementById('signupBtn');
+            
+            if (!username || !email || !password) {
+                showMessage('Please fill in all fields', 'error');
+                return;
+            }
+
+            if (password.length < 4) {
+                showMessage('Password must be at least 4 characters', 'error');
+                return;
+            }
+
+            signupBtn.disabled = true;
+            signupBtn.textContent = 'Creating Account...';
+            clearMessage();
+            
+            try {
+                const response = await fetch('/api/auth/signup', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        username: username,
+                        email: email,
+                        password: password
+                    })
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok && data.access_token) {
+                    showMessage('Account created successfully! Redirecting...', 'success');
+                    document.getElementById('signupForm').reset();
+                    
+                    setTimeout(() => {
+                        window.location.href = '/login';
+                    }, 2000);
+                    
+                } else {
+                    const errorMsg = data.detail || 'Signup failed. Please try again.';
+                    showMessage(errorMsg, 'error');
+                }
+                
+            } catch (error) {
+                console.error('❌ Signup error:', error);
+                showMessage('Network error. Please try again.', 'error');
+            } finally {
+                signupBtn.disabled = false;
+                signupBtn.textContent = 'Create Account';
+            }
+        });
+
+        function showMessage(message, type) {
+            const messageEl = document.getElementById('message');
+            messageEl.textContent = message;
+            messageEl.className = `message ${type}`;
+            messageEl.style.display = 'block';
+            
+            if (type === 'error') {
+                setTimeout(clearMessage, 5000);
+            }
+        }
+
+        function clearMessage() {
+            const messageEl = document.getElementById('message');
+            messageEl.style.display = 'none';
+            messageEl.className = 'message';
+            messageEl.textContent = '';
+        }
+    </script>
+</body>
+</html>

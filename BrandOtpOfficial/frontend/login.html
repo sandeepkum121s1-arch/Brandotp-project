@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BrandOtp - Your Trusted OTP Service Platform</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: white;
+        }
+        
+        .hero-section {
+            text-align: center;
+            padding: 100px 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .logo {
+            font-size: 3rem;
+            margin-bottom: 20px;
+        }
+        
+        .hero-title {
+            font-size: 3.5rem;
+            font-weight: bold;
+            margin-bottom: 20px;
+            text-shadow: 0 4px 8px rgba(0,0,0,0.3);
+        }
+        
+        .hero-subtitle {
+            font-size: 1.5rem;
+            margin-bottom: 40px;
+            opacity: 0.9;
+        }
+        
+        .cta-buttons {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            margin-bottom: 60px;
+            flex-wrap: wrap;
+        }
+        
+        .btn {
+            padding: 15px 35px;
+            border: none;
+            border-radius: 50px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(45deg, #ff6b6b, #ff8e53);
+            color: white;
+        }
+        
+        .btn-secondary {
+            background: rgba(255,255,255,0.2);
+            color: white;
+            border: 2px solid rgba(255,255,255,0.3);
+        }
+        
+        .btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+        }
+        
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            margin: 60px 0;
+            padding: 0 20px;
+        }
+        
+        .feature-card {
+            background: rgba(255,255,255,0.1);
+            padding: 40px 30px;
+            border-radius: 20px;
+            text-align: center;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.2);
+            transition: transform 0.3s ease;
+        }
+        
+        .feature-card:hover {
+            transform: translateY(-10px);
+        }
+        
+        .feature-icon {
+            font-size: 3rem;
+            margin-bottom: 20px;
+        }
+        
+        .feature-title {
+            font-size: 1.5rem;
+            margin-bottom: 15px;
+            font-weight: 600;
+        }
+        
+        .feature-desc {
+            opacity: 0.9;
+            line-height: 1.6;
+        }
+        
+        .stats-section {
+            background: rgba(255,255,255,0.1);
+            padding: 40px 20px;
+            margin: 60px 0;
+            border-radius: 20px;
+            backdrop-filter: blur(10px);
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 30px;
+            text-align: center;
+        }
+        
+        .stat-number {
+            font-size: 2.5rem;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+        
+        .stat-label {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+        
+        .footer {
+            text-align: center;
+            padding: 40px 20px;
+            margin-top: 60px;
+            border-top: 1px solid rgba(255,255,255,0.2);
+        }
+        
+        @media (max-width: 768px) {
+            .hero-title {
+                font-size: 2.5rem;
+            }
+            
+            .hero-subtitle {
+                font-size: 1.2rem;
+            }
+            
+            .cta-buttons {
+                flex-direction: column;
+                align-items: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="hero-section">
+        <div class="logo">🔥 BrandOtp</div>
+        
+        <h1 class="hero-title">Your Trusted OTP Service Platform</h1>
+        
+        <p class="hero-subtitle">
+            Get instant access to OTP verification numbers for secure verification and communication
+        </p>
+        
+        <div class="cta-buttons">
+            <a href="/login" class="btn btn-primary">🔐 Login</a>
+            <a href="/signup" class="btn btn-secondary">📝 Get Started</a>
+        </div>
+        
+        <div class="features-grid">
+            <div class="feature-card">
+                <div class="feature-icon">🌍</div>
+                <h3 class="feature-title">200+ Countries</h3>
+                <p class="feature-desc">
+                    Access virtual numbers from over 200 countries worldwide with competitive pricing
+                </p>
+            </div>
+            
+            <div class="feature-card">
+                <div class="feature-icon">📱</div>
+                <h3 class="feature-title">1200+ Services</h3>
+                <p class="feature-desc">
+                    Support for WhatsApp, Telegram, Instagram, Facebook and many more platforms
+                </p>
+            </div>
+            
+            <div class="feature-card">
+                <div class="feature-icon">⚡</div>
+                <h3 class="feature-title">Instant Delivery</h3>
+                <p class="feature-desc">
+                    Get your virtual numbers instantly with SMS reception in seconds
+                </p>
+            </div>
+            
+            <div class="feature-card">
+                <div class="feature-icon">💰</div>
+                <h3 class="feature-title">Best Prices</h3>
+                <p class="feature-desc">
+                    Competitive pricing starting from ₹8 with transparent cost structure
+                </p>
+            </div>
+            
+            <div class="feature-card">
+                <div class="feature-icon">🔒</div>
+                <h3 class="feature-title">100% Secure</h3>
+                <p class="feature-desc">
+                    Your data is protected with enterprise-grade security measures
+                </p>
+            </div>
+            
+            <div class="feature-card">
+                <div class="feature-icon">⭐</div>
+                <h3 class="feature-title">24/7 Support</h3>
+                <p class="feature-desc">
+                    Round-the-clock customer support to help with any issues
+                </p>
+            </div>
+        </div>
+        
+        <div class="stats-section">
+            <div class="stats-grid">
+                <div>
+                    <div class="stat-number">100K+</div>
+                    <div class="stat-label">Happy Customers</div>
+                </div>
+                <div>
+                    <div class="stat-number">200+</div>
+                    <div class="stat-label">Countries Supported</div>
+                </div>
+                <div>
+                    <div class="stat-number">1200+</div>
+                    <div class="stat-label">Services Available</div>
+                </div>
+                <div>
+                    <div class="stat-number">99.9%</div>
+                    <div class="stat-label">Uptime</div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="footer">
+        <p>&copy; 2025 BrandOtp. Your trusted partner for OTP verification services.</p>
+        <p>
+            <a href="/login" style="color: white; margin: 0 10px;">Login</a> |
+            <a href="/signup" style="color: white; margin: 0 10px;">Sign Up</a> |
+            <a href="/buy-number" style="color: white; margin: 0 10px;">Buy Number</a>
+        </p>
+    </div>
+</body>
+</html>
