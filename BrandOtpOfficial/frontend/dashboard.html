@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard - BrandOtp</title>
+    <title>Dashboard - BrandOtp | Premium OTP Service Platform</title>
     <style>
         * {
             margin: 0;
@@ -273,6 +273,27 @@
             z-index: 1;
         }
         
+        .balance-refresh {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: rgba(255,255,255,0.2);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            cursor: pointer;
+            font-size: 1.2rem;
+            transition: all 0.3s ease;
+            z-index: 2;
+        }
+        
+        .balance-refresh:hover {
+            background: rgba(255,255,255,0.3);
+            transform: rotate(180deg);
+        }
+        
         /* ✅ QUICK ACTIONS 2x2 GRID */
         .actions-section {
             background: white;
@@ -379,6 +400,10 @@
             display: none;
         }
         
+        .rotating {
+            animation: spin 1s linear infinite;
+        }
+        
         /* ✅ MOBILE RESPONSIVE */
         @media (max-width: 768px) {
             .brand-title {
@@ -450,7 +475,7 @@
     <!-- ✅ USER HEADER WITH PROFILE DROPDOWN -->
     <div class="user-header">
         <div class="user-welcome">
-            Hello, <span id="userName">User</span>! 👋
+            Hello, <span id="userName">Loading...</span>! 👋
         </div>
         
         <!-- ✅ PROFILE DROPDOWN -->
@@ -470,131 +495,236 @@
     </div>
 
     <div class="container">
-        <!-- ✅ AVAILABLE BALANCE SECTION -->
-        <div id="balanceCard" class="balance-card">
-            <div class="balance-title">Available Balance</div>
-            <div class="balance-amount" id="userBalance">₹0.00</div>
-            <div class="balance-subtitle">Ready for your next purchase</div>
+        <!-- ✅ LOADING STATE -->
+        <div id="loadingState" class="loading">
+            <div class="loading-spinner"></div>
+            <div class="loading-text">Loading your dashboard...</div>
+        </div>
+        
+        <!-- ✅ ERROR STATE -->
+        <div id="errorState" class="error hidden">
+            <h3>❌ Authentication Required</h3>
+            <p>Please log in to access your dashboard</p>
+            <button onclick="window.location.href='/login'">Go to Login</button>
         </div>
 
-        <!-- ✅ QUICK ACTIONS SECTION (2x2 GRID) -->
-        <div id="actionsSection" class="actions-section">
-            <h3 class="section-title">🎯 Quick Actions</h3>
-            <div class="actions-grid">
-                <a href="/add-money" class="action-btn primary">
-                    <div class="action-icon">💳</div>
-                    <div>Add Balance</div>
-                </a>
-                <a href="/buy-number" class="action-btn secondary">
-                    <div class="action-icon">📱</div>
-                    <div>Buy Number</div>
-                </a>
-                <a href="/wallet" class="action-btn secondary">
-                    <div class="action-icon">👛</div>
-                    <div>Wallet</div>
-                </a>
-                <a href="/history" class="action-btn primary">
-                    <div class="action-icon">📊</div>
-                    <div>History</div>
-                </a>
+        <!-- ✅ DASHBOARD CONTENT -->
+        <div id="dashboardContent" class="hidden">
+            <!-- ✅ AVAILABLE BALANCE SECTION -->
+            <div class="balance-card">
+                <button class="balance-refresh" onclick="refreshBalance()" id="refreshBtn" title="Refresh Balance">
+                    🔄
+                </button>
+                <div class="balance-title">Available Balance</div>
+                <div class="balance-amount" id="userBalance">₹0.00</div>
+                <div class="balance-subtitle">Ready for your next purchase</div>
             </div>
-        </div>
 
-        <!-- ✅ CONTACT US SECTION -->
-        <div id="contactSection" class="contact-section">
-            <h3 class="section-title">📞 Contact Us</h3>
-            <p>Get in touch with us on social media</p>
-            <div class="contact-links">
-                <a href="#" class="contact-btn telegram-btn" id="telegramLink">
-                    📱 Telegram
-                </a>
-                <a href="#" class="contact-btn instagram-btn" id="instagramLink">
-                    📸 Instagram
-                </a>
+            <!-- ✅ QUICK ACTIONS SECTION (2x2 GRID) -->
+            <div class="actions-section">
+                <h3 class="section-title">🎯 Quick Actions</h3>
+                <div class="actions-grid">
+                    <a href="/add-money" class="action-btn primary">
+                        <div class="action-icon">💳</div>
+                        <div>Add Balance</div>
+                    </a>
+                    <a href="/buy-number" class="action-btn secondary">
+                        <div class="action-icon">📱</div>
+                        <div>Buy Number</div>
+                    </a>
+                    <a href="/wallet" class="action-btn secondary">
+                        <div class="action-icon">👛</div>
+                        <div>Wallet</div>
+                    </a>
+                    <a href="/history" class="action-btn primary">
+                        <div class="action-icon">📊</div>
+                        <div>History</div>
+                    </a>
+                </div>
+            </div>
+
+            <!-- ✅ CONTACT US SECTION -->
+            <div class="contact-section">
+                <h3 class="section-title">📞 Contact Us</h3>
+                <p>Get in touch with us on social media</p>
+                <div class="contact-links">
+                    <a href="https://t.me/brandotp" class="contact-btn telegram-btn" target="_blank">
+                        📱 Telegram
+                    </a>
+                    <a href="https://instagram.com/brandotp" class="contact-btn instagram-btn" target="_blank">
+                        📸 Instagram
+                    </a>
+                </div>
             </div>
         </div>
     </div>
 
-    <!-- ✅ INLINE JAVASCRIPT - NO EXTERNAL FILES -->
     <script>
-        // ===== DASHBOARD SCRIPT - SIMPLE & SECURE =====
-        console.log('📊 Dashboard loading...');
-
-        // ✅ CHECK AUTHENTICATION ON LOAD
+        // ✅ API Configuration - Same as other pages
+        const API_BASE_URL = "https://brandotp-project1.onrender.com";
+        const FRONTEND_URL = "https://brandotp-official.netlify.app";
+        
+        // ✅ Dashboard Initialization
         document.addEventListener('DOMContentLoaded', function() {
-            console.log('✅ Dashboard DOM loaded');
-            
-            // Check if user is logged in
-            const accessToken = localStorage.getItem('access_token');
-            const storedUser = localStorage.getItem('user');
-            
-            if (!accessToken || !storedUser) {
-                console.log('❌ No authentication found, redirecting to login');
-                window.location.href = '/login';
-                return;
-            }
-            
-            // Load user data from localStorage
-            loadUserFromStorage();
+            console.log('📊 Dashboard initializing...');
+            initializeDashboard();
         });
-
-        // ✅ LOAD USER DATA FROM LOCALSTORAGE
-        function loadUserFromStorage() {
+        
+        // ✅ Initialize Dashboard
+        async function initializeDashboard() {
             try {
-                const storedUser = localStorage.getItem('user');
+                // Show loading state
+                showLoadingState();
                 
-                if (storedUser) {
-                    const userData = JSON.parse(storedUser);
-                    console.log('👤 Loading user data:', userData);
-                    
-                    // Update username in welcome message
-                    const userNameEl = document.getElementById('userName');
-                    if (userNameEl) {
-                        userNameEl.textContent = userData.username || 'User';
-                    }
-                    
-                    // Update balance
-                    const userBalanceEl = document.getElementById('userBalance');
-                    if (userBalanceEl) {
-                        const balance = parseFloat(userData.balance || 0);
-                        userBalanceEl.textContent = `₹${balance.toFixed(2)}`;
-                    }
-                    
-                    // Update profile email
-                    const profileEmailEl = document.getElementById('profileEmail');
-                    if (profileEmailEl) {
-                        profileEmailEl.textContent = `📧 ${userData.email || 'user@example.com'}`;
-                    }
-                    
-                    console.log('✅ User data loaded successfully');
-                    
+                // Check authentication
+                const authResult = await checkAuthentication();
+                
+                if (authResult.success) {
+                    // Load user data
+                    await loadUserData(authResult.user);
+                    showDashboardContent();
                 } else {
-                    console.log('❌ No user data in localStorage');
-                    showDefaultData();
+                    // Not authenticated
+                    showErrorState();
                 }
                 
             } catch (error) {
-                console.error('❌ Error loading user data:', error);
-                showDefaultData();
+                console.error('Dashboard initialization error:', error);
+                showErrorState();
             }
         }
-
-        // ✅ SHOW DEFAULT DATA IF NO USER DATA
-        function showDefaultData() {
+        
+        // ✅ Check Authentication
+        async function checkAuthentication() {
+            try {
+                const response = await fetch(`${API_BASE_URL}/api/auth/me`, {
+                    method: 'GET',
+                    credentials: 'include',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                });
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    if (data.success && data.user) {
+                        console.log('✅ User authenticated:', data.user.username);
+                        return { success: true, user: data.user };
+                    }
+                }
+                
+                console.log('❌ Authentication failed');
+                return { success: false };
+                
+            } catch (error) {
+                console.error('Auth check error:', error);
+                return { success: false };
+            }
+        }
+        
+        // ✅ Load User Data
+        async function loadUserData(user) {
+            try {
+                // Update username
+                const userNameEl = document.getElementById('userName');
+                if (userNameEl) {
+                    userNameEl.textContent = user.username || 'User';
+                }
+                
+                // Update balance
+                const userBalanceEl = document.getElementById('userBalance');
+                if (userBalanceEl) {
+                    const balance = parseFloat(user.balance || 0);
+                    userBalanceEl.textContent = `₹${balance.toFixed(2)}`;
+                }
+                
+                // Update profile email
+                const profileEmailEl = document.getElementById('profileEmail');
+                if (profileEmailEl) {
+                    profileEmailEl.textContent = `📧 ${user.email || 'user@example.com'}`;
+                }
+                
+                console.log('✅ User data loaded successfully');
+                
+            } catch (error) {
+                console.error('Error loading user data:', error);
+                showDefaultUserData();
+            }
+        }
+        
+        // ✅ Refresh Balance
+        async function refreshBalance() {
+            const refreshBtn = document.getElementById('refreshBtn');
+            const balanceEl = document.getElementById('userBalance');
+            
+            try {
+                // Add rotation animation
+                refreshBtn.classList.add('rotating');
+                
+                // Fetch latest user data
+                const response = await fetch(`${API_BASE_URL}/api/auth/me`, {
+                    method: 'GET',
+                    credentials: 'include',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                });
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    if (data.success && data.user) {
+                        // Update balance
+                        const balance = parseFloat(data.user.balance || 0);
+                        balanceEl.textContent = `₹${balance.toFixed(2)}`;
+                        console.log('✅ Balance refreshed:', balance);
+                    }
+                }
+                
+            } catch (error) {
+                console.error('Error refreshing balance:', error);
+            } finally {
+                // Remove rotation animation
+                setTimeout(() => {
+                    refreshBtn.classList.remove('rotating');
+                }, 1000);
+            }
+        }
+        
+        // ✅ Show Default User Data
+        function showDefaultUserData() {
             document.getElementById('userName').textContent = 'User';
             document.getElementById('userBalance').textContent = '₹0.00';
             document.getElementById('profileEmail').textContent = '📧 user@example.com';
         }
-
-        // ✅ TOGGLE PROFILE DROPDOWN
+        
+        // ✅ State Management Functions
+        function showLoadingState() {
+            document.getElementById('loadingState').classList.remove('hidden');
+            document.getElementById('errorState').classList.add('hidden');
+            document.getElementById('dashboardContent').classList.add('hidden');
+        }
+        
+        function showErrorState() {
+            document.getElementById('loadingState').classList.add('hidden');
+            document.getElementById('errorState').classList.remove('hidden');
+            document.getElementById('dashboardContent').classList.add('hidden');
+        }
+        
+        function showDashboardContent() {
+            document.getElementById('loadingState').classList.add('hidden');
+            document.getElementById('errorState').classList.add('hidden');
+            document.getElementById('dashboardContent').classList.remove('hidden');
+        }
+        
+        // ✅ Toggle Profile Dropdown
         function toggleProfile() {
             const profileMenu = document.getElementById('profileMenu');
             if (profileMenu) {
                 profileMenu.classList.toggle('show');
             }
         }
-
-        // ✅ CLOSE DROPDOWN WHEN CLICKING OUTSIDE
+        
+        // ✅ Close Dropdown When Clicking Outside
         document.addEventListener('click', function(event) {
             const profileDropdown = document.querySelector('.profile-dropdown');
             const profileMenu = document.getElementById('profileMenu');
@@ -603,37 +733,36 @@
                 profileMenu.classList.remove('show');
             }
         });
-
-        // ✅ LOGOUT FUNCTION
-        function logout() {
+        
+        // ✅ Logout Function
+        async function logout() {
             console.log('🚪 User logging out');
             
-            // Clear all stored data
-            localStorage.removeItem('access_token');
-            localStorage.removeItem('user');
+            try {
+                // Call logout API
+                const response = await fetch(`${API_BASE_URL}/api/auth/logout`, {
+                    method: 'POST',
+                    credentials: 'include'
+                });
+                
+                console.log('Logout response:', response.status);
+            } catch (error) {
+                console.error('Logout API error:', error);
+            }
             
-            // Redirect to login
+            // Redirect to login (regardless of API response)
             window.location.href = '/login';
         }
-
-        // ✅ REFRESH USER DATA (if needed)
-        function refreshUserData() {
-            console.log('🔄 Refreshing user data');
-            loadUserFromStorage();
-        }
-
-        // ✅ PREVENT FORM SUBMISSIONS (if any forms exist)
-        document.addEventListener('submit', function(e) {
-            e.preventDefault();
-            console.log('Form submission prevented');
-        });
-
-        // ✅ HANDLE NAVIGATION ERRORS
+        
+        // ✅ Error Handler
         window.addEventListener('error', function(e) {
             console.error('Dashboard error:', e.error);
         });
-
-        console.log('✅ Dashboard script loaded successfully - No API calls, No infinite loops');
+        
+        // ✅ Console Ready Message
+        console.log('🔥 BrandOtp Dashboard Ready!');
+        console.log('📡 API Endpoint:', API_BASE_URL);
+        console.log('🌍 Frontend URL:', FRONTEND_URL);
     </script>
 </body>
 </html>
