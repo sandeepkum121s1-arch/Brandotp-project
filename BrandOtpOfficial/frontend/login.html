@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BrandOtp - Your Trusted OTP Service Platform</title>
+    <title>BrandOtp - Login | Premium OTP Service Platform</title>
     <style>
         * {
             margin: 0;
@@ -16,56 +16,106 @@
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             min-height: 100vh;
             color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
         }
         
-        .hero-section {
-            text-align: center;
-            padding: 100px 20px;
-            max-width: 1200px;
-            margin: 0 auto;
+        .login-container {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 20px;
+            padding: 40px;
+            width: 100%;
+            max-width: 450px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
         }
         
         .logo {
-            font-size: 3rem;
-            margin-bottom: 20px;
+            text-align: center;
+            font-size: 2.5rem;
+            margin-bottom: 10px;
         }
         
-        .hero-title {
-            font-size: 3.5rem;
+        .login-title {
+            text-align: center;
+            font-size: 2rem;
             font-weight: bold;
-            margin-bottom: 20px;
-            text-shadow: 0 4px 8px rgba(0,0,0,0.3);
+            margin-bottom: 10px;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.3);
         }
         
-        .hero-subtitle {
-            font-size: 1.5rem;
-            margin-bottom: 40px;
+        .login-subtitle {
+            text-align: center;
+            font-size: 1rem;
+            margin-bottom: 30px;
             opacity: 0.9;
         }
         
-        .cta-buttons {
-            display: flex;
-            gap: 20px;
-            justify-content: center;
-            margin-bottom: 60px;
-            flex-wrap: wrap;
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            opacity: 0.9;
+        }
+        
+        .form-input {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 10px;
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+        
+        .form-input::placeholder {
+            color: rgba(255, 255, 255, 0.7);
+        }
+        
+        .form-input:focus {
+            outline: none;
+            border-color: rgba(255, 255, 255, 0.6);
+            background: rgba(255, 255, 255, 0.15);
+            box-shadow: 0 0 20px rgba(255, 255, 255, 0.1);
         }
         
         .btn {
-            padding: 15px 35px;
+            width: 100%;
+            padding: 15px;
             border: none;
-            border-radius: 50px;
+            border-radius: 10px;
             font-size: 1.1rem;
             font-weight: 600;
             cursor: pointer;
             transition: all 0.3s ease;
             text-decoration: none;
             display: inline-block;
+            text-align: center;
+            margin-bottom: 15px;
         }
         
         .btn-primary {
             background: linear-gradient(45deg, #ff6b6b, #ff8e53);
             color: white;
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(255, 107, 107, 0.3);
+        }
+        
+        .btn-primary:disabled {
+            opacity: 0.7;
+            cursor: not-allowed;
+            transform: none;
         }
         
         .btn-secondary {
@@ -74,192 +124,295 @@
             border: 2px solid rgba(255,255,255,0.3);
         }
         
-        .btn:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+        .btn-secondary:hover {
+            background: rgba(255,255,255,0.3);
+            transform: translateY(-2px);
         }
         
-        .features-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 30px;
-            margin: 60px 0;
-            padding: 0 20px;
-        }
-        
-        .feature-card {
-            background: rgba(255,255,255,0.1);
-            padding: 40px 30px;
-            border-radius: 20px;
+        .divider {
             text-align: center;
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255,255,255,0.2);
-            transition: transform 0.3s ease;
+            margin: 20px 0;
+            opacity: 0.7;
         }
         
-        .feature-card:hover {
-            transform: translateY(-10px);
-        }
-        
-        .feature-icon {
-            font-size: 3rem;
+        .alert {
+            padding: 12px 15px;
+            border-radius: 8px;
             margin-bottom: 20px;
+            font-weight: 500;
         }
         
-        .feature-title {
-            font-size: 1.5rem;
-            margin-bottom: 15px;
+        .alert-error {
+            background: rgba(255, 82, 82, 0.2);
+            border: 1px solid rgba(255, 82, 82, 0.4);
+            color: #ffcdd2;
+        }
+        
+        .alert-success {
+            background: rgba(76, 175, 80, 0.2);
+            border: 1px solid rgba(76, 175, 80, 0.4);
+            color: #c8e6c9;
+        }
+        
+        .loading {
+            opacity: 0.7;
+            pointer-events: none;
+        }
+        
+        .loading::after {
+            content: ' ⏳';
+        }
+        
+        .back-home {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            color: white;
+            text-decoration: none;
             font-weight: 600;
+            opacity: 0.8;
+            transition: opacity 0.3s ease;
+            z-index: 1000;
         }
         
-        .feature-desc {
-            opacity: 0.9;
-            line-height: 1.6;
+        .back-home:hover {
+            opacity: 1;
         }
         
-        .stats-section {
-            background: rgba(255,255,255,0.1);
-            padding: 40px 20px;
-            margin: 60px 0;
-            border-radius: 20px;
-            backdrop-filter: blur(10px);
-        }
-        
-        .stats-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 30px;
+        .forgot-password {
             text-align: center;
+            margin-top: 20px;
         }
         
-        .stat-number {
-            font-size: 2.5rem;
-            font-weight: bold;
-            margin-bottom: 10px;
+        .forgot-password a {
+            color: rgba(255, 255, 255, 0.8);
+            text-decoration: none;
+            font-size: 0.9rem;
         }
         
-        .stat-label {
-            font-size: 1.1rem;
-            opacity: 0.9;
+        .forgot-password a:hover {
+            color: white;
         }
         
-        .footer {
-            text-align: center;
-            padding: 40px 20px;
-            margin-top: 60px;
-            border-top: 1px solid rgba(255,255,255,0.2);
-        }
-        
-        @media (max-width: 768px) {
-            .hero-title {
-                font-size: 2.5rem;
+        @media (max-width: 480px) {
+            .login-container {
+                padding: 30px 20px;
+                margin: 10px;
             }
             
-            .hero-subtitle {
-                font-size: 1.2rem;
+            .login-title {
+                font-size: 1.8rem;
             }
             
-            .cta-buttons {
-                flex-direction: column;
-                align-items: center;
+            .logo {
+                font-size: 2rem;
             }
         }
     </style>
 </head>
 <body>
-    <div class="hero-section">
+    <!-- Back to Home -->
+    <a href="/" class="back-home">← Back to Home</a>
+    
+    <div class="login-container">
         <div class="logo">🔥 BrandOtp</div>
         
-        <h1 class="hero-title">Your Trusted OTP Service Platform</h1>
+        <h1 class="login-title">Welcome Back!</h1>
         
-        <p class="hero-subtitle">
-            Get instant access to OTP verification numbers for secure verification and communication
+        <p class="login-subtitle">
+            Sign in to access your premium OTP service dashboard
         </p>
         
-        <div class="cta-buttons">
-            <a href="/login" class="btn btn-primary">🔐 Login</a>
-            <a href="/signup" class="btn btn-secondary">📝 Get Started</a>
-        </div>
+        <!-- Alert Messages -->
+        <div id="alertMessage" class="alert" style="display: none;"></div>
         
-        <div class="features-grid">
-            <div class="feature-card">
-                <div class="feature-icon">🌍</div>
-                <h3 class="feature-title">200+ Countries</h3>
-                <p class="feature-desc">
-                    Access virtual numbers from over 200 countries worldwide with competitive pricing
-                </p>
+        <!-- Login Form -->
+        <form id="loginForm" onsubmit="handleLogin(event)">
+            <div class="form-group">
+                <label for="email" class="form-label">Email Address</label>
+                <input 
+                    type="email" 
+                    id="email" 
+                    class="form-input" 
+                    placeholder="Enter your email"
+                    required
+                >
             </div>
             
-            <div class="feature-card">
-                <div class="feature-icon">📱</div>
-                <h3 class="feature-title">1200+ Services</h3>
-                <p class="feature-desc">
-                    Support for WhatsApp, Telegram, Instagram, Facebook and many more platforms
-                </p>
+            <div class="form-group">
+                <label for="password" class="form-label">Password</label>
+                <input 
+                    type="password" 
+                    id="password" 
+                    class="form-input" 
+                    placeholder="Enter your password"
+                    required
+                >
             </div>
             
-            <div class="feature-card">
-                <div class="feature-icon">⚡</div>
-                <h3 class="feature-title">Instant Delivery</h3>
-                <p class="feature-desc">
-                    Get your virtual numbers instantly with SMS reception in seconds
-                </p>
-            </div>
-            
-            <div class="feature-card">
-                <div class="feature-icon">💰</div>
-                <h3 class="feature-title">Best Prices</h3>
-                <p class="feature-desc">
-                    Competitive pricing starting from ₹8 with transparent cost structure
-                </p>
-            </div>
-            
-            <div class="feature-card">
-                <div class="feature-icon">🔒</div>
-                <h3 class="feature-title">100% Secure</h3>
-                <p class="feature-desc">
-                    Your data is protected with enterprise-grade security measures
-                </p>
-            </div>
-            
-            <div class="feature-card">
-                <div class="feature-icon">⭐</div>
-                <h3 class="feature-title">24/7 Support</h3>
-                <p class="feature-desc">
-                    Round-the-clock customer support to help with any issues
-                </p>
-            </div>
-        </div>
+            <button type="submit" class="btn btn-primary" id="loginBtn">
+                🔐 Sign In
+            </button>
+        </form>
         
-        <div class="stats-section">
-            <div class="stats-grid">
-                <div>
-                    <div class="stat-number">100K+</div>
-                    <div class="stat-label">Happy Customers</div>
-                </div>
-                <div>
-                    <div class="stat-number">200+</div>
-                    <div class="stat-label">Countries Supported</div>
-                </div>
-                <div>
-                    <div class="stat-number">1200+</div>
-                    <div class="stat-label">Services Available</div>
-                </div>
-                <div>
-                    <div class="stat-number">99.9%</div>
-                    <div class="stat-label">Uptime</div>
-                </div>
-            </div>
+        <div class="divider">- OR -</div>
+        
+        <a href="/signup" class="btn btn-secondary">
+            📝 Create New Account
+        </a>
+        
+        <div class="forgot-password">
+            <a href="#" onclick="handleForgotPassword()">Forgot your password?</a>
         </div>
     </div>
-    
-    <div class="footer">
-        <p>&copy; 2025 BrandOtp. Your trusted partner for OTP verification services.</p>
-        <p>
-            <a href="/login" style="color: white; margin: 0 10px;">Login</a> |
-            <a href="/signup" style="color: white; margin: 0 10px;">Sign Up</a> |
-            <a href="/buy-number" style="color: white; margin: 0 10px;">Buy Number</a>
-        </p>
-    </div>
+
+    <script>
+        // ✅ API Configuration - Same as index.html
+        const API_BASE_URL = "https://brandotp-project1.onrender.com";
+        const FRONTEND_URL = "https://brandotp-official.netlify.app";
+        
+        // ✅ Check if already logged in
+        document.addEventListener('DOMContentLoaded', function() {
+            checkIfAlreadyLoggedIn();
+        });
+        
+        // ✅ Check if user is already logged in
+        async function checkIfAlreadyLoggedIn() {
+            try {
+                const response = await fetch(`${API_BASE_URL}/api/auth/me`, {
+                    method: 'GET',
+                    credentials: 'include',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                });
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    if (data.success) {
+                        // User already logged in - redirect to dashboard
+                        showAlert('Already logged in! Redirecting...', 'success');
+                        setTimeout(() => {
+                            window.location.href = '/dashboard';
+                        }, 1000);
+                        return true;
+                    }
+                }
+            } catch (error) {
+                console.log('Not logged in:', error.message);
+            }
+            return false;
+        }
+        
+        // ✅ Handle Login Form Submission
+        async function handleLogin(event) {
+            event.preventDefault();
+            
+            const loginBtn = document.getElementById('loginBtn');
+            const email = document.getElementById('email').value.trim();
+            const password = document.getElementById('password').value.trim();
+            
+            // Validation
+            if (!email || !password) {
+                showAlert('Please fill in all fields', 'error');
+                return;
+            }
+            
+            if (!isValidEmail(email)) {
+                showAlert('Please enter a valid email address', 'error');
+                return;
+            }
+            
+            // Set loading state
+            loginBtn.classList.add('loading');
+            loginBtn.disabled = true;
+            loginBtn.textContent = 'Signing In...';
+            
+            try {
+                // Make login API call
+                const response = await fetch(`${API_BASE_URL}/api/auth/login`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    credentials: 'include',
+                    body: JSON.stringify({
+                        email: email,
+                        password: password
+                    })
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok && data.success) {
+                    // Login successful
+                    showAlert('Login successful! Redirecting...', 'success');
+                    
+                    // Redirect after short delay
+                    setTimeout(() => {
+                        window.location.href = '/dashboard';
+                    }, 1500);
+                    
+                } else {
+                    // Login failed
+                    const errorMessage = data.error || data.detail || 'Login failed. Please try again.';
+                    showAlert(errorMessage, 'error');
+                }
+                
+            } catch (error) {
+                console.error('Login error:', error);
+                showAlert('Connection error. Please check your internet and try again.', 'error');
+            } finally {
+                // Reset button state
+                loginBtn.classList.remove('loading');
+                loginBtn.disabled = false;
+                loginBtn.textContent = '🔐 Sign In';
+            }
+        }
+        
+        // ✅ Forgot Password Handler
+        function handleForgotPassword() {
+            showAlert('Password reset feature coming soon! Contact support for assistance.', 'error');
+        }
+        
+        // ✅ Show Alert Messages
+        function showAlert(message, type = 'error') {
+            const alertDiv = document.getElementById('alertMessage');
+            alertDiv.textContent = message;
+            alertDiv.className = `alert alert-${type}`;
+            alertDiv.style.display = 'block';
+            
+            // Auto hide after 5 seconds
+            setTimeout(() => {
+                alertDiv.style.display = 'none';
+            }, 5000);
+        }
+        
+        // ✅ Email Validation
+        function isValidEmail(email) {
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            return emailRegex.test(email);
+        }
+        
+        // ✅ Demo Login (for testing)
+        function demoLogin() {
+            document.getElementById('email').value = 'demo@brandotp.com';
+            document.getElementById('password').value = 'demo123';
+            showAlert('Demo credentials filled! Click Sign In to continue.', 'success');
+        }
+        
+        // ✅ Console Ready Message
+        console.log('🔐 BrandOtp Login Ready!');
+        console.log('📡 API Endpoint:', API_BASE_URL);
+        console.log('🌍 Frontend URL:', FRONTEND_URL);
+        
+        // ✅ Add keyboard shortcut for demo (Ctrl+D)
+        document.addEventListener('keydown', function(event) {
+            if (event.ctrlKey && event.key === 'd') {
+                event.preventDefault();
+                demoLogin();
+            }
+        });
+    </script>
 </body>
 </html>
