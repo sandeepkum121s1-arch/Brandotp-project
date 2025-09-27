@@ -16,7 +16,6 @@ starlette
 cryptography
 dnspython
 email-validator
-bson
 typing-extensions
 Werkzeug
 watchfiles
