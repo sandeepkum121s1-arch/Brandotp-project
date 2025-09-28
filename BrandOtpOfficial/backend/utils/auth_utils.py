@@ -7,7 +7,7 @@ from bson import ObjectId
 from backend.db import users_collection
 
 # JWT Configuration
-SECRET_KEY = "brandotp-secret-key-2024"
+SECRET_KEY = "brandotpsecretkey2025"
 ALGORITHM = "HS256"
 
 # Create HTTPBearer instance
