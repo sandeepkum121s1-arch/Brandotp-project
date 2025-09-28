@@ -18,7 +18,6 @@ from typing import Optional
 from backend.routes import register_all_routers
 from backend.routes.smsman_numbers import router as smsman_router
 
-
 # PAY0 Configuration
 PAY0_USER_TOKEN = "your-live-or-test-token"
 
