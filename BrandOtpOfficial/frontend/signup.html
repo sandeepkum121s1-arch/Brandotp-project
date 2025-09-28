@@ -3,400 +3,153 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BrandOtp - Sign Up | Join Premium OTP Service Platform</title>
+    <title>Signup - BrandOtp</title>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-        
+        * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-family: Arial, sans-serif;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             min-height: 100vh;
-            color: white;
             display: flex;
-            align-items: center;
             justify-content: center;
-            padding: 20px;
+            align-items: center;
         }
-        
         .signup-container {
-            background: rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(20px);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            border-radius: 20px;
+            background: white;
             padding: 40px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
             width: 100%;
-            max-width: 450px;
-            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+            max-width: 400px;
         }
-        
-        .logo {
+        .title {
             text-align: center;
-            font-size: 2.5rem;
-            margin-bottom: 10px;
-        }
-        
-        .signup-title {
-            text-align: center;
-            font-size: 2rem;
-            font-weight: bold;
-            margin-bottom: 10px;
-            text-shadow: 0 2px 4px rgba(0,0,0,0.3);
-        }
-        
-        .signup-subtitle {
-            text-align: center;
-            font-size: 1rem;
             margin-bottom: 30px;
-            opacity: 0.9;
+            font-size: 2rem;
+            color: #333;
         }
-        
         .form-group {
             margin-bottom: 20px;
         }
-        
-        .form-label {
+        label {
             display: block;
             margin-bottom: 8px;
             font-weight: 600;
-            opacity: 0.9;
+            color: #555;
         }
-        
-        .form-input {
+        input {
             width: 100%;
-            padding: 15px;
-            border: 2px solid rgba(255, 255, 255, 0.3);
-            border-radius: 10px;
-            background: rgba(255, 255, 255, 0.1);
-            color: white;
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
             font-size: 1rem;
-            transition: all 0.3s ease;
         }
-        
-        .form-input::placeholder {
-            color: rgba(255, 255, 255, 0.7);
-        }
-        
-        .form-input:focus {
+        input:focus {
             outline: none;
-            border-color: rgba(255, 255, 255, 0.6);
-            background: rgba(255, 255, 255, 0.15);
-            box-shadow: 0 0 20px rgba(255, 255, 255, 0.1);
+            border-color: #4361ee;
         }
-        
-        .password-strength {
-            margin-top: 5px;
-            font-size: 0.85rem;
-            opacity: 0.8;
-        }
-        
-        .strength-weak { color: #ff6b6b; }
-        .strength-medium { color: #ffd93d; }
-        .strength-strong { color: #6bcf7f; }
-        
-        .btn {
+        .signup-btn {
             width: 100%;
             padding: 15px;
+            background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+            color: white;
             border: none;
-            border-radius: 10px;
+            border-radius: 8px;
             font-size: 1.1rem;
             font-weight: 600;
             cursor: pointer;
-            transition: all 0.3s ease;
-            text-decoration: none;
-            display: inline-block;
-            text-align: center;
-            margin-bottom: 15px;
         }
-        
-        .btn-primary {
-            background: linear-gradient(45deg, #28a745, #20c997);
-            color: white;
-        }
-        
-        .btn-primary:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 25px rgba(40, 167, 69, 0.3);
-        }
-        
-        .btn-primary:disabled {
-            opacity: 0.7;
+        .signup-btn:disabled {
+            opacity: 0.6;
             cursor: not-allowed;
-            transform: none;
         }
-        
-        .btn-secondary {
-            background: rgba(255,255,255,0.2);
-            color: white;
-            border: 2px solid rgba(255,255,255,0.3);
-        }
-        
-        .btn-secondary:hover {
-            background: rgba(255,255,255,0.3);
-            transform: translateY(-2px);
-        }
-        
-        .divider {
-            text-align: center;
-            margin: 20px 0;
-            opacity: 0.7;
-        }
-        
-        .alert {
-            padding: 12px 15px;
-            border-radius: 8px;
+        .message {
+            padding: 10px;
             margin-bottom: 20px;
-            font-weight: 500;
+            border-radius: 5px;
+            display: none;
         }
-        
-        .alert-error {
-            background: rgba(255, 82, 82, 0.2);
-            border: 1px solid rgba(255, 82, 82, 0.4);
-            color: #ffcdd2;
+        .message.error {
+            background: #f8d7da;
+            color: #721c24;
         }
-        
-        .alert-success {
-            background: rgba(76, 175, 80, 0.2);
-            border: 1px solid rgba(76, 175, 80, 0.4);
-            color: #c8e6c9;
+        .message.success {
+            background: #d4edda;
+            color: #155724;
         }
-        
-        .loading {
-            opacity: 0.7;
-            pointer-events: none;
-        }
-        
-        .loading::after {
-            content: ' ⏳';
-        }
-        
-        .back-home {
-            position: fixed;
-            top: 20px;
-            left: 20px;
-            color: white;
-            text-decoration: none;
-            font-weight: 600;
-            opacity: 0.8;
-            transition: opacity 0.3s ease;
-            z-index: 1000;
-        }
-        
-        .back-home:hover {
-            opacity: 1;
-        }
-        
         .login-link {
             text-align: center;
             margin-top: 20px;
         }
-        
         .login-link a {
-            color: rgba(255, 255, 255, 0.8);
+            color: #4361ee;
             text-decoration: none;
             font-weight: 600;
-        }
-        
-        .login-link a:hover {
-            color: white;
-        }
-        
-        .terms {
-            text-align: center;
-            font-size: 0.85rem;
-            margin-top: 15px;
-            opacity: 0.8;
-            line-height: 1.4;
-        }
-        
-        .terms a {
-            color: rgba(255, 255, 255, 0.9);
-            text-decoration: none;
-        }
-        
-        .terms a:hover {
-            color: white;
-        }
-        
-        @media (max-width: 480px) {
-            .signup-container {
-                padding: 30px 20px;
-                margin: 10px;
-            }
-            
-            .signup-title {
-                font-size: 1.8rem;
-            }
-            
-            .logo {
-                font-size: 2rem;
-            }
         }
     </style>
 </head>
 <body>
-    <!-- Back to Home -->
-    <a href="/" class="back-home">← Back to Home</a>
-    
     <div class="signup-container">
-        <div class="logo">🔥 BrandOtp</div>
+        <h1 class="title">📝 Sign Up</h1>
         
-        <h1 class="signup-title">Create Account</h1>
+        <div id="message" class="message"></div>
         
-        <p class="signup-subtitle">
-            Join thousands of users using premium OTP service platform
-        </p>
-        
-        <!-- Alert Messages -->
-        <div id="alertMessage" class="alert" style="display: none;"></div>
-        
-        <!-- Signup Form -->
-        <form id="signupForm" onsubmit="handleSignup(event)">
+        <form id="signupForm">
             <div class="form-group">
-                <label for="username" class="form-label">Username</label>
-                <input 
-                    type="text" 
-                    id="username" 
-                    class="form-input" 
-                    placeholder="Choose a username"
-                    required
-                    minlength="3"
-                    maxlength="20"
-                >
+                <label for="username">Username</label>
+                <input type="text" id="username" name="username" required>
             </div>
-            
+
             <div class="form-group">
-                <label for="email" class="form-label">Email Address</label>
-                <input 
-                    type="email" 
-                    id="email" 
-                    class="form-input" 
-                    placeholder="Enter your email"
-                    required
-                >
+                <label for="email">Email Address</label>
+                <input type="email" id="email" name="email" required>
             </div>
-            
+
             <div class="form-group">
-                <label for="password" class="form-label">Password</label>
-                <input 
-                    type="password" 
-                    id="password" 
-                    class="form-input" 
-                    placeholder="Create a strong password"
-                    required
-                    minlength="6"
-                    oninput="checkPasswordStrength()"
-                >
-                <div id="passwordStrength" class="password-strength"></div>
+                <label for="password">Password (min 4 chars)</label>
+                <input type="password" id="password" name="password" required>
             </div>
-            
-            <button type="submit" class="btn btn-primary" id="signupBtn">
-                📝 Create Account
+
+            <button type="submit" class="signup-btn" id="signupBtn">
+                Create Account
             </button>
         </form>
-        
-        <div class="divider">- OR -</div>
-        
-        <a href="/login" class="btn btn-secondary">
-            🔐 Already Have Account
-        </a>
-        
+
         <div class="login-link">
-            Already registered? <a href="/login">Sign in here</a>
-        </div>
-        
-        <div class="terms">
-            By creating an account, you agree to our 
-            <a href="#" onclick="showAlert('Terms of Service coming soon!', 'error')">Terms of Service</a> 
-            and 
-            <a href="#" onclick="showAlert('Privacy Policy coming soon!', 'error')">Privacy Policy</a>
+            Already have an account? <a href="/login">Login here</a>
         </div>
     </div>
 
     <script>
-        // ✅ API Configuration - Same as other pages
-        const API_BASE_URL = "https://brandotp-project1.onrender.com";
-        const FRONTEND_URL = "https://brandotp-official.netlify.app";
-        
-        // ✅ Check if already logged in
-        document.addEventListener('DOMContentLoaded', function() {
-            checkIfAlreadyLoggedIn();
-        });
-        
-        // ✅ Check if user is already logged in
-        async function checkIfAlreadyLoggedIn() {
-            try {
-                const response = await fetch(`${API_BASE_URL}/api/auth/me`, {
-                    method: 'GET',
-                    credentials: 'include',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    }
-                });
-                
-                if (response.ok) {
-                    const data = await response.json();
-                    if (data.success) {
-                        // User already logged in - redirect to dashboard
-                        showAlert('Already logged in! Redirecting to dashboard...', 'success');
-                        setTimeout(() => {
-                            window.location.href = '/dashboard';
-                        }, 1000);
-                        return true;
-                    }
-                }
-            } catch (error) {
-                console.log('Not logged in:', error.message);
-            }
-            return false;
-        }
-        
-        // ✅ Handle Signup Form Submission
-        async function handleSignup(event) {
-            event.preventDefault();
+        document.getElementById('signupForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
             
-            const signupBtn = document.getElementById('signupBtn');
             const username = document.getElementById('username').value.trim();
             const email = document.getElementById('email').value.trim();
             const password = document.getElementById('password').value;
+            const signupBtn = document.getElementById('signupBtn');
             
-            // Validation
             if (!username || !email || !password) {
-                showAlert('Please fill in all fields', 'error');
+                showMessage('Please fill in all fields', 'error');
                 return;
             }
-            
-            if (username.length < 3) {
-                showAlert('Username must be at least 3 characters long', 'error');
+
+            if (password.length < 4) {
+                showMessage('Password must be at least 4 characters', 'error');
                 return;
             }
-            
-            if (!isValidEmail(email)) {
-                showAlert('Please enter a valid email address', 'error');
-                return;
-            }
-            
-            if (password.length < 6) {
-                showAlert('Password must be at least 6 characters long', 'error');
-                return;
-            }
-            
-            // Set loading state
-            signupBtn.classList.add('loading');
+
             signupBtn.disabled = true;
             signupBtn.textContent = 'Creating Account...';
+            clearMessage();
             
             try {
-                // Make signup API call
-                const response = await fetch(`${API_BASE_URL}/api/auth/signup`, {
+                const response = await fetch('/api/auth/signup', {
                     method: 'POST',
                     headers: {
-                        'Content-Type': 'application/json'
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json'
                     },
-                    credentials: 'include',
                     body: JSON.stringify({
                         username: username,
                         email: email,
@@ -406,146 +159,45 @@
                 
                 const data = await response.json();
                 
-                if (response.ok && data.success) {
-                    // Signup successful
-                    showAlert('Account created successfully! Redirecting to login...', 'success');
+                if (response.ok && data.access_token) {
+                    showMessage('Account created successfully! Redirecting...', 'success');
                     document.getElementById('signupForm').reset();
                     
-                    // Redirect to login page
                     setTimeout(() => {
                         window.location.href = '/login';
                     }, 2000);
                     
                 } else {
-                    // Signup failed
-                    const errorMessage = data.error || data.detail || 'Account creation failed. Please try again.';
-                    showAlert(errorMessage, 'error');
+                    const errorMsg = data.detail || 'Signup failed. Please try again.';
+                    showMessage(errorMsg, 'error');
                 }
                 
             } catch (error) {
-                console.error('Signup error:', error);
-                showAlert('Connection error. Please check your internet and try again.', 'error');
+                console.error('❌ Signup error:', error);
+                showMessage('Network error. Please try again.', 'error');
             } finally {
-                // Reset button state
-                signupBtn.classList.remove('loading');
                 signupBtn.disabled = false;
-                signupBtn.textContent = '📝 Create Account';
-            }
-        }
-        
-        // ✅ Password Strength Checker
-        function checkPasswordStrength() {
-            const password = document.getElementById('password').value;
-            const strengthDiv = document.getElementById('passwordStrength');
-            
-            if (password.length === 0) {
-                strengthDiv.textContent = '';
-                return;
-            }
-            
-            let strength = 0;
-            let feedback = [];
-            
-            // Length check
-            if (password.length >= 8) strength += 1;
-            else feedback.push('8+ characters');
-            
-            // Uppercase check
-            if (/[A-Z]/.test(password)) strength += 1;
-            else feedback.push('uppercase letter');
-            
-            // Lowercase check
-            if (/[a-z]/.test(password)) strength += 1;
-            else feedback.push('lowercase letter');
-            
-            // Number check
-            if (/[0-9]/.test(password)) strength += 1;
-            else feedback.push('number');
-            
-            // Special character check
-            if (/[^A-Za-z0-9]/.test(password)) strength += 1;
-            else feedback.push('special character');
-            
-            // Display strength
-            if (strength < 2) {
-                strengthDiv.className = 'password-strength strength-weak';
-                strengthDiv.textContent = '❌ Weak - Add: ' + feedback.slice(0, 2).join(', ');
-            } else if (strength < 4) {
-                strengthDiv.className = 'password-strength strength-medium';
-                strengthDiv.textContent = '⚠️ Medium - Consider adding: ' + feedback.slice(0, 1).join(', ');
-            } else {
-                strengthDiv.className = 'password-strength strength-strong';
-                strengthDiv.textContent = '✅ Strong password!';
-            }
-        }
-        
-        // ✅ Show Alert Messages
-        function showAlert(message, type = 'error') {
-            const alertDiv = document.getElementById('alertMessage');
-            alertDiv.textContent = message;
-            alertDiv.className = `alert alert-${type}`;
-            alertDiv.style.display = 'block';
-            
-            // Auto hide after 5 seconds for errors, 3 seconds for success
-            const hideTime = type === 'success' ? 3000 : 5000;
-            setTimeout(() => {
-                alertDiv.style.display = 'none';
-            }, hideTime);
-        }
-        
-        // ✅ Email Validation
-        function isValidEmail(email) {
-            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-            return emailRegex.test(email);
-        }
-        
-        // ✅ Username Validation (real-time)
-        document.getElementById('username').addEventListener('input', function() {
-            const username = this.value;
-            if (username.length > 0 && username.length < 3) {
-                this.style.borderColor = 'rgba(255, 82, 82, 0.6)';
-            } else if (username.length >= 3) {
-                this.style.borderColor = 'rgba(76, 175, 80, 0.6)';
-            } else {
-                this.style.borderColor = 'rgba(255, 255, 255, 0.3)';
+                signupBtn.textContent = 'Create Account';
             }
         });
-        
-        // ✅ Email Validation (real-time)
-        document.getElementById('email').addEventListener('input', function() {
-            const email = this.value;
-            if (email.length > 0) {
-                if (isValidEmail(email)) {
-                    this.style.borderColor = 'rgba(76, 175, 80, 0.6)';
-                } else {
-                    this.style.borderColor = 'rgba(255, 82, 82, 0.6)';
-                }
-            } else {
-                this.style.borderColor = 'rgba(255, 255, 255, 0.3)';
+
+        function showMessage(message, type) {
+            const messageEl = document.getElementById('message');
+            messageEl.textContent = message;
+            messageEl.className = `message ${type}`;
+            messageEl.style.display = 'block';
+            
+            if (type === 'error') {
+                setTimeout(clearMessage, 5000);
             }
-        });
-        
-        // ✅ Demo Signup (for testing)
-        function demoSignup() {
-            document.getElementById('username').value = 'testuser';
-            document.getElementById('email').value = 'test@brandotp.com';
-            document.getElementById('password').value = 'Test123!';
-            checkPasswordStrength();
-            showAlert('Demo credentials filled! Click Create Account to continue.', 'success');
         }
-        
-        // ✅ Console Ready Message
-        console.log('📝 BrandOtp Signup Ready!');
-        console.log('📡 API Endpoint:', API_BASE_URL);
-        console.log('🌍 Frontend URL:', FRONTEND_URL);
-        
-        // ✅ Add keyboard shortcut for demo (Ctrl+D)
-        document.addEventListener('keydown', function(event) {
-            if (event.ctrlKey && event.key === 'd') {
-                event.preventDefault();
-                demoSignup();
-            }
-        });
+
+        function clearMessage() {
+            const messageEl = document.getElementById('message');
+            messageEl.style.display = 'none';
+            messageEl.className = 'message';
+            messageEl.textContent = '';
+        }
     </script>
 </body>
 </html>
