@@ -272,8 +272,8 @@
                     
                     console.log('📤 Sending login request to API...');
                     
-                    // Send JSON data with correct headers
-                    const response = await fetch('/api/auth/login', {
+                    // 🔥 MAIN FIX - USE RENDER BACKEND URL
+                    const response = await fetch('https://brandotp-project1.onrender.com/api/auth/login', {
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json'
