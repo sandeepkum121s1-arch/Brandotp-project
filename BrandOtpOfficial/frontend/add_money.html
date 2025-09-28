@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Add Money · BrandOtp</title>
+
+<!-- ---------- EMBEDDED, MOBILE-FIRST CSS ---------- -->
+<style>
+:root{
+  --brand-1:#4361ee;
+  --brand-2:#3f37c9;
+  --bg-grad:linear-gradient(135deg,#f5f7fa 0%,#c3cfe2 100%);
+  --header-grad:linear-gradient(135deg,#667eea 0%,#764ba2 100%);
+  --radius:22px;
+  --shadow:0 10px 30px rgba(0,0,0,.08);
+  --speed:.25s;
+}
+*{box-sizing:border-box;margin:0;padding:0;font-family:"Segoe UI",sans-serif;}
+body{background:var(--bg-grad);min-height:100vh;display:flex;flex-direction:column;}
+/* header & nav */
+.brand-header{background:var(--header-grad);color:#fff;text-align:center;padding:24px;}
+.brand-title{font-size:2rem;font-weight:700;letter-spacing:1px;}
+.brand-subtitle{opacity:.9;margin-top:6px;font-size:.95rem;}
+.nav-bar{background:var(--brand-1);color:#fff;padding:14px 18px;display:flex;align-items:center;gap:12px}
+.back-btn{display:inline-block;padding:6px 14px;border-radius:18px;background:rgba(255,255,255,.25);
+  color:#fff;text-decoration:none;font-size:.9rem;transition:background var(--speed)}
+.back-btn:hover{background:#fff;color:var(--brand-1)}
+.page-title{font-weight:600}
+/* container */
+.container{width:min(560px,94%);margin:40px auto 20px;padding:0 4px}
+.message{display:none;padding:14px;border-radius:12px;font-weight:600;margin-bottom:18px;text-align:center}
+.message.success{background:#d4edda;color:#155724;border:1px solid #c3e6cb}
+.message.error{background:#f8d7da;color:#721c24;border:1px solid #f5c6cb}
+/* card */
+.add-money-card{background:#fff;border-radius:var(--radius);padding:34px 28px;box-shadow:var(--shadow)}
+.card-title{font-size:1.5rem;text-align:center;margin-bottom:26px}
+/* form */
+.form-group{margin-bottom:22px}
+label{display:block;font-weight:600;margin-bottom:6px}
+input[type=number],input[type=tel]{width:100%;padding:14px;border:2px solid #e1e5e9;
+  border-radius:12px;font-size:1rem;transition:border var(--speed)}
+input:focus{outline:none;border-color:var(--brand-1);box-shadow:0 0 0 3px rgba(67,97,238,.12)}
+small{display:block;margin-top:6px;font-size:.85rem;color:#666}
+/* amount shortcuts */
+.amount-shortcuts{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:14px}
+.amount-btn{border:none;background:#f8f9fa;border:2px solid #e1e5e9;padding:10px;border-radius:10px;
+  font-weight:600;cursor:pointer;transition:all var(--speed)}
+.amount-btn:hover{background:var(--brand-1);color:#fff;border-color:var(--brand-1);transform:translateY(-2px)}
+/* button */
+.submit-btn{width:100%;padding:16px;font-size:1.1rem;font-weight:600;color:#fff;
+  background:linear-gradient(135deg,var(--brand-1) 0%,var(--brand-2) 100%);
+  border:none;border-radius:12px;cursor:pointer;box-shadow:0 6px 16px rgba(67,97,238,.3);
+  transition:transform var(--speed)}
+.submit-btn:hover{transform:translateY(-3px)}
+.submit-btn:disabled{opacity:.6;cursor:not-allowed;transform:none}
+
+@media (max-width:480px){
+  .brand-title{font-size:1.6rem}
+  .container{margin-top:24px}
+  .add-money-card{padding:26px 20px}
+  .amount-shortcuts{grid-template-columns:repeat(2,1fr)}
+}
+</style>
+</head>
+<body>
+
+<header class="brand-header">
+  <h1 class="brand-title">💳 Add Money</h1>
+  <p class="brand-subtitle">Top-up your BrandOtp wallet</p>
+</header>
+
+<nav class="nav-bar">
+  <a href="/wallet" class="back-btn">← Wallet</a>
+  <span class="page-title">Add Balance</span>
+</nav>
+
+<main class="container">
+  <div id="message" class="message"></div>
+
+  <section class="add-money-card">
+    <h2 class="card-title">💰 Wallet Top-up</h2>
+
+    <form id="addMoneyForm" autocomplete="off">
+      <!-- amount -->
+      <div class="form-group">
+        <label for="amount">Amount (₹50–₹5,000)</label>
+        <input id="amount" type="number" min="50" max="5000" required>
+        <div class="amount-shortcuts">
+          <button type="button" class="amount-btn" onclick="setAmount(50)">₹50</button>
+          <button type="button" class="amount-btn" onclick="setAmount(100)">₹100</button>
+          <button type="button" class="amount-btn" onclick="setAmount(500)">₹500</button>
+          <button type="button" class="amount-btn" onclick="setAmount(1000)">₹1000</button>
+          <button type="button" class="amount-btn" onclick="setAmount(2000)">₹2000</button>
+          <button type="button" class="amount-btn" onclick="setAmount(5000)">₹5000</button>
+        </div>
+      </div>
+
+      <!-- mobile -->
+      <div class="form-group">
+        <label for="mobile_number">Mobile Number</label>
+        <input id="mobile_number" type="tel" pattern="[0-9]{10}" maxlength="10" required>
+        <small>Used for payment processing</small>
+      </div>
+
+      <!-- hidden paymentMethod -->
+      <input type="hidden" name="paymentMethod" value="pay0">
+
+      <button id="addMoneyBtn" class="submit-btn" type="submit">💳 Proceed to Pay0</button>
+    </form>
+  </section>
+</main>
+
+<script src="/assets/js/add_money.js"></script>
+</body>
+</html>

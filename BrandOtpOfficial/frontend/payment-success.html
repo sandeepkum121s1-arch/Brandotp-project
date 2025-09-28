@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Payment Success - BrandOtp</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        
+        .success-container {
+            max-width: 500px;
+            width: 100%;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+            overflow: hidden;
+            text-align: center;
+        }
+        
+        .success-header {
+            background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+            color: white;
+            padding: 40px 30px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .success-header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+            animation: successGlow 3s ease-in-out infinite;
+        }
+        
+        @keyframes successGlow {
+            0%, 100% { opacity: 0.5; }
+            50% { opacity: 1; }
+        }
+        
+        .success-icon {
+            font-size: 4rem;
+            margin-bottom: 20px;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .success-title {
+            font-size: 2rem;
+            font-weight: bold;
+            margin-bottom: 10px;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .success-subtitle {
+            font-size: 1rem;
+            opacity: 0.9;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .success-body {
+            padding: 40px 30px;
+        }
+        
+        .success-message {
+            font-size: 1.1rem;
+            color: #333;
+            margin-bottom: 30px;
+            line-height: 1.6;
+        }
+        
+        .success-details {
+            background: linear-gradient(135deg, #f8f9ff 0%, #e3e8ff 100%);
+            padding: 20px;
+            border-radius: 15px;
+            margin-bottom: 30px;
+            border-left: 5px solid #28a745;
+        }
+        
+        .detail-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px 0;
+            border-bottom: 1px solid rgba(0,0,0,0.05);
+        }
+        
+        .detail-item:last-child {
+            border-bottom: none;
+        }
+        
+        .detail-label {
+            font-weight: 600;
+            color: #666;
+        }
+        
+        .detail-value {
+            font-weight: bold;
+            color: #333;
+        }
+        
+        .action-buttons {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 25px;
+            font-weight: 600;
+            text-decoration: none;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #4361ee 0%, #3f37c9 100%);
+            color: white;
+            box-shadow: 0 4px 15px rgba(67,97,238,0.3);
+        }
+        
+        .btn-secondary {
+            background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+            color: white;
+            box-shadow: 0 4px 15px rgba(40,167,69,0.3);
+        }
+        
+        .btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.2);
+        }
+        
+        .auto-redirect {
+            margin-top: 20px;
+            font-size: 0.9rem;
+            color: #666;
+            font-style: italic;
+        }
+        
+        .countdown {
+            font-weight: bold;
+            color: #28a745;
+        }
+        
+        /* MOBILE RESPONSIVE */
+        @media (max-width: 480px) {
+            .success-header {
+                padding: 30px 20px;
+            }
+            
+            .success-body {
+                padding: 30px 20px;
+            }
+            
+            .success-icon {
+                font-size: 3rem;
+            }
+            
+            .success-title {
+                font-size: 1.5rem;
+            }
+            
+            .action-buttons {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .btn {
+                width: 100%;
+                justify-content: center;
+                max-width: 280px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="success-container">
+        <!-- SUCCESS HEADER -->
+        <div class="success-header">
+            <div class="success-icon">✅</div>
+            <h1 class="success-title">Payment Successful!</h1>
+            <p class="success-subtitle">Your transaction has been completed</p>
+        </div>
+
+        <!-- SUCCESS BODY -->
+        <div class="success-body">
+            <p class="success-message">
+                Great! Your payment has been processed successfully.<br>
+                Your BrandOtp wallet will be updated shortly.
+            </p>
+
+            <!-- PAYMENT DETAILS -->
+            <div class="success-details">
+                <div class="detail-item">
+                    <span class="detail-label">Gateway:</span>
+                    <span class="detail-value">Pay0 🚀</span>
+                </div>
+                <div class="detail-item">
+                    <span class="detail-label">Status:</span>
+                    <span class="detail-value" style="color: #28a745;">SUCCESS ✅</span>
+                </div>
+                <div class="detail-item">
+                    <span class="detail-label">Processing Time:</span>
+                    <span class="detail-value">Instant</span>
+                </div>
+            </div>
+
+            <!-- ACTION BUTTONS -->
+            <div class="action-buttons">
+                <a href="/wallet" class="btn btn-primary">
+                    💰 Go to Wallet
+                </a>
+                <a href="/dashboard" class="btn btn-secondary">
+                    🏠 Dashboard
+                </a>
+            </div>
+
+            <!-- AUTO REDIRECT -->
+            <div class="auto-redirect">
+                Redirecting to wallet in <span class="countdown" id="countdown">5</span> seconds...
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ✅ Auto redirect countdown
+        let countdown = 5;
+        const countdownElement = document.getElementById('countdown');
+        
+        const countdownTimer = setInterval(() => {
+            countdown--;
+            countdownElement.textContent = countdown;
+            
+            if (countdown <= 0) {
+                clearInterval(countdownTimer);
+                window.location.href = '/wallet';
+            }
+        }, 1000);
+
+        // ✅ Handle query parameters
+        const urlParams = new URLSearchParams(window.location.search);
+        const orderId = urlParams.get('order_id');
+        const amount = urlParams.get('amount');
+        
+        if (orderId) {
+            // Add order ID to details if available
+            const detailsDiv = document.querySelector('.success-details');
+            const orderDetail = document.createElement('div');
+            orderDetail.className = 'detail-item';
+            orderDetail.innerHTML = `
+                <span class="detail-label">Order ID:</span>
+                <span class="detail-value">${orderId}</span>
+            `;
+            detailsDiv.insertBefore(orderDetail, detailsDiv.firstChild);
+        }
+        
+        if (amount) {
+            // Add amount to details if available
+            const detailsDiv = document.querySelector('.success-details');
+            const amountDetail = document.createElement('div');
+            amountDetail.className = 'detail-item';
+            amountDetail.innerHTML = `
+                <span class="detail-label">Amount:</span>
+                <span class="detail-value">₹${amount}</span>
+            `;
+            detailsDiv.insertBefore(amountDetail, detailsDiv.children[1]);
+        }
+
+        // ✅ Optional: Notify parent window if in iframe
+        if (window.parent && window.parent !== window) {
+            window.parent.postMessage({
+                type: 'PAYMENT_SUCCESS',
+                orderId: orderId,
+                amount: amount
+            }, '*');
+        }
+    </script>
+</body>
+</html>
