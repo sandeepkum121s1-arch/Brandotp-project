@@ -37,12 +37,18 @@ app = FastAPI(
 # CORS Middleware
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=[
+        "https://brandotpofficial.shop",
+        "https://www.brandotpofficial.shop",
+        "https://brandotp-official.netlify.app",
+        "*"
+    ],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
     expose_headers=["*"]
 )
+
 
 
 # Database initialization
@@ -711,3 +717,4 @@ async def get_current_user_info(request: Request):
             status_code=401,
             content={"success": False, "error": "Authentication required"}
         )
+
