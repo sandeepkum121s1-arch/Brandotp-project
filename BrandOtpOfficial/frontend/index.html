@@ -464,17 +464,6 @@
             line-height: 1.5;
         }
         
-        /* Loading State */
-        .loading {
-            opacity: 0.7;
-            pointer-events: none;
-        }
-        
-        .loading::after {
-            content: '⏳';
-            margin-left: 0.5rem;
-        }
-        
         /* Desktop Responsive */
         @media (min-width: 768px) {
             .nav-container {
@@ -668,7 +657,7 @@
                 <li><a href="#process">How it Works</a></li>
                 <li><a href="#about">About</a></li>
             </ul>
-            <div class="nav-buttons" id="navButtons">
+            <div class="nav-buttons">
                 <a href="/login" class="btn btn-outline">🔐 Login</a>
                 <a href="/signup" class="btn btn-primary">📝 Create Account</a>
                 <button class="mobile-menu-btn" onclick="toggleMobileMenu()">☰</button>
@@ -862,80 +851,7 @@
     </footer>
 
     <script>
-        // ✅ API Configuration - Easy Domain Change
-        const API_BASE_URL = "https://brandotp-project1.onrender.com";
-        const FRONTEND_URL = "https://brandotp-official.netlify.app";
-        
-        // ✅ Check Authentication on Page Load
-        document.addEventListener('DOMContentLoaded', function() {
-            checkAuthStatus();
-        });
-        
-        // ✅ Check if User is Logged In
-        async function checkAuthStatus() {
-            try {
-                const response = await fetch(`${API_BASE_URL}/api/auth/me`, {
-                    method: 'GET',
-                    credentials: 'include',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    }
-                });
-                
-                if (response.ok) {
-                    const data = await response.json();
-                    if (data.success) {
-                        updateNavForLoggedUser(data.user);
-                        console.log('✅ User authenticated:', data.user.username);
-                    }
-                } else {
-                    console.log('👤 User not authenticated');
-                }
-            } catch (error) {
-                console.log('🔍 Auth check failed:', error.message);
-            }
-        }
-        
-        // ✅ Update Navigation for Logged In Users
-        function updateNavForLoggedUser(user) {
-            const navButtons = document.getElementById('navButtons');
-            if (navButtons) {
-                navButtons.innerHTML = `
-                    <a href="/dashboard" class="btn btn-outline">📊 Dashboard</a>
-                    <a href="/buy-number" class="btn btn-primary">📱 Buy Numbers</a>
-                    <button class="mobile-menu-btn" onclick="toggleMobileMenu()">☰</button>
-                `;
-            }
-            
-            // Update mobile menu if exists
-            const mobileMenu = document.getElementById('mobileMenu');
-            if (mobileMenu) {
-                mobileMenu.innerHTML = `
-                    <a href="/dashboard" onclick="closeMobileMenu()">📊 Dashboard</a>
-                    <a href="/buy-number" onclick="closeMobileMenu()">📱 Buy Numbers</a>
-                    <a href="/wallet" onclick="closeMobileMenu()">💰 Wallet</a>
-                    <a href="/history" onclick="closeMobileMenu()">📊 History</a>
-                `;
-            }
-        }
-        
-        // ✅ Logout Function
-        async function logout() {
-            try {
-                const response = await fetch(`${API_BASE_URL}/api/auth/logout`, {
-                    method: 'POST',
-                    credentials: 'include'
-                });
-                
-                if (response.ok) {
-                    window.location.reload();
-                }
-            } catch (error) {
-                console.error('Logout failed:', error);
-            }
-        }
-        
-        // ✅ Mobile Menu Toggle
+        // Mobile Menu Toggle
         function toggleMobileMenu() {
             const mobileMenu = document.getElementById('mobileMenu');
             mobileMenu.classList.toggle('active');
@@ -946,7 +862,7 @@
             mobileMenu.classList.remove('active');
         }
         
-        // ✅ Close mobile menu when clicking outside
+        // Close mobile menu when clicking outside
         document.addEventListener('click', function(e) {
             const mobileMenu = document.getElementById('mobileMenu');
             const menuBtn = document.querySelector('.mobile-menu-btn');
@@ -956,7 +872,7 @@
             }
         });
 
-        // ✅ Smooth scrolling for anchor links
+        // Smooth scrolling for anchor links
         document.querySelectorAll('a[href^="#"]').forEach(anchor => {
             anchor.addEventListener('click', function (e) {
                 e.preventDefault();
@@ -969,7 +885,7 @@
             });
         });
 
-        // ✅ Navbar scroll effect
+        // Navbar scroll effect
         window.addEventListener('scroll', function() {
             const navbar = document.querySelector('.navbar');
             if (window.scrollY > 50) {
@@ -981,7 +897,7 @@
             }
         });
 
-        // ✅ Animation on scroll for mobile
+        // Animation on scroll for mobile
         const observerOptions = {
             threshold: 0.1,
             rootMargin: '0px 0px -30px 0px'
@@ -995,15 +911,10 @@
             });
         }, observerOptions);
 
-        // ✅ Observe elements
+        // Observe elements
         document.querySelectorAll('.feature-card, .step').forEach(el => {
             observer.observe(el);
         });
-        
-        // ✅ Console Welcome Message
-        console.log('🔥 BrandOtp Platform Ready!');
-        console.log('📡 API Endpoint:', API_BASE_URL);
-        console.log('🌍 Frontend URL:', FRONTEND_URL);
     </script>
 </body>
 </html>
