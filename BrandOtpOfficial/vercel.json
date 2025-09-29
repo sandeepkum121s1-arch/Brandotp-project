@@ -1,46 +1,9 @@
 {
   "cleanUrls": true,
-  "trailingSlash": false,
   "rewrites": [
     {
-      "source": "/",
-      "destination": "/BrandOtpOfficial/frontend/index.html"
-    },
-    {
-      "source": "/signup",
-      "destination": "/BrandOtpOfficial/frontend/signup.html"
-    },
-    {
-      "source": "/login", 
-      "destination": "/BrandOtpOfficial/frontend/login.html"
-    },
-    {
-      "source": "/dashboard",
-      "destination": "/BrandOtpOfficial/frontend/dashboard.html"
-    },
-    {
-      "source": "/add-money",
-      "destination": "/BrandOtpOfficial/frontend/add-money.html"
-    },
-    {
-      "source": "/buy-number",
-      "destination": "/BrandOtpOfficial/frontend/buy-number.html"
-    },
-    {
-      "source": "/history",
-      "destination": "/BrandOtpOfficial/frontend/history.html"
-    },
-    {
-      "source": "/wallet",
-      "destination": "/BrandOtpOfficial/frontend/wallet.html"
-    },
-    {
-      "source": "/auth",
-      "destination": "/BrandOtpOfficial/frontend/auth.html"
-    },
-    {
-      "source": "/payment-success",
-      "destination": "/BrandOtpOfficial/frontend/payment-success.html"
+      "source": "/(.*)",
+      "destination": "/$1.html"
     },
     {
       "source": "/api/(.*)",
