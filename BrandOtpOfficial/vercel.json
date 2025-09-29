@@ -1,40 +1,48 @@
 {
   "rewrites": [
     {
-      "source": "/api/(.*)",
-      "destination": "https://brandotp-project1.onrender.com/api/$1"
-    },
-    {
       "source": "/",
-      "destination": "/frontend/index.html"
+      "destination": "/index.html"
     },
     {
       "source": "/signup",
-      "destination": "/frontend/signup.html"
+      "destination": "/signup.html"
     },
     {
-      "source": "/login",
-      "destination": "/frontend/login.html"
+      "source": "/login", 
+      "destination": "/login.html"
     },
     {
-      "source": "/dashboard", 
-      "destination": "/frontend/dashboard.html"
+      "source": "/dashboard",
+      "destination": "/dashboard.html"
     },
     {
       "source": "/add-money",
-      "destination": "/frontend/add-money.html"
+      "destination": "/add-money.html"
     },
     {
       "source": "/buy-number",
-      "destination": "/frontend/buy-number.html"
+      "destination": "/buy-number.html"
     },
     {
       "source": "/history",
-      "destination": "/frontend/history.html"
+      "destination": "/history.html"
     },
     {
       "source": "/wallet",
-      "destination": "/frontend/wallet.html"
+      "destination": "/wallet.html"
+    },
+    {
+      "source": "/payment-success",
+      "destination": "/payment-success.html"
+    },
+    {
+      "source": "/auth",
+      "destination": "/auth.html"
+    },
+    {
+      "source": "/api/(.*)",
+      "destination": "https://brandotp-project1.onrender.com/api/$1"
     }
   ]
 }
