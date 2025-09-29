@@ -1,22 +1,44 @@
-// ===== WALLET.JS - Real API Integration =====
+// ===== WALLET.JS - BACKEND CONNECTED =====
 console.log('💰 Wallet JS loaded');
+
+// ✅ BACKEND URL CONSTANT
+const BACKEND_URL = 'https://brandotp-project1.onrender.com';
 
 let currentUser = null;
 let isRefreshing = false;
 
+/* ✅ AUTHENTICATION CHECK */
+function checkAuth() {
+    const accessToken = localStorage.getItem('access_token');
+    if (!accessToken) {
+        console.log('❌ No authentication found, redirecting to login');
+        window.location.href = '/login';
+        return false;
+    }
+    return true;
+}
+
+/* ✅ GET AUTH HEADERS */
+function getAuthHeaders() {
+    const accessToken = localStorage.getItem('access_token');
+    return {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json',
+        'Authorization': `Bearer ${accessToken}`
+    };
+}
+
 // Initialize wallet on page load
 document.addEventListener('DOMContentLoaded', function() {
     console.log('💰 Wallet page DOM loaded');
+    if (!checkAuth()) return;
     initializeWallet();
 });
 
 // ✅ INITIALIZE WALLET
 async function initializeWallet() {
     try {
-        // Check authentication
-        if (!await checkAuthentication()) {
-            return;
-        }
+        console.log('🚀 Initializing wallet...');
         
         // Load real wallet data from API
         await loadWalletData();
@@ -30,84 +52,46 @@ async function initializeWallet() {
     }
 }
 
-// ✅ AUTHENTICATION CHECK
-async function checkAuthentication() {
-    try {
-        const accessToken = localStorage.getItem('access_token');
-        if (!accessToken) {
-            console.log('❌ No access token found, redirecting to login');
-            window.location.href = '/login';
-            return false;
-        }
-        
-        // Verify token with backend
-        const response = await fetch('/api/auth/me', {
-            method: 'GET',
-            headers: {
-                'Authorization': `Bearer ${accessToken}`,
-                'Content-Type': 'application/json'
-            }
-        });
-        
-        if (response.ok) {
-            const data = await response.json();
-            if (data.success) {
-                currentUser = data.user;
-                console.log('✅ Authentication verified:', currentUser.email);
-                return true;
-            }
-        }
-        
-        // Token invalid, redirect to login
-        localStorage.removeItem('access_token');
-        window.location.href = '/login';
-        return false;
-        
-    } catch (error) {
-        console.error('❌ Authentication error:', error);
-        localStorage.removeItem('access_token');
-        window.location.href = '/login';
-        return false;
-    }
-}
-
 // ✅ LOAD REAL WALLET DATA FROM API
 async function loadWalletData() {
     if (isRefreshing) return;
     isRefreshing = true;
     
     try {
-        const accessToken = localStorage.getItem('access_token');
+        console.log('🔄 Loading wallet data...');
         
         // Show loading
         showLoading(true);
         
-        // Fetch balance and transactions from real API
-        const [balanceResponse, transactionsResponse] = await Promise.all([
-            fetch('/api/wallet/balance', {
-                headers: { 'Authorization': `Bearer ${accessToken}` }
-            }),
-            fetch('/api/wallet/transactions', {
-                headers: { 'Authorization': `Bearer ${accessToken}` }
-            })
-        ]);
+        /* ✅ API CALL TO BACKEND - GET WALLET BALANCE */
+        const balanceResponse = await fetch(`${BACKEND_URL}/api/wallet/balance`, {
+            method: 'GET',
+            headers: getAuthHeaders()
+        });
         
-        // Process balance
-        if (balanceResponse.ok) {
-            const balanceData = await balanceResponse.json();
-            if (balanceData.success) {
-                updateWalletBalance(balanceData.balance);
-                console.log('✅ Balance loaded:', balanceData.balance);
-            }
+        const balanceData = await balanceResponse.json();
+        console.log('💰 Balance response:', balanceData);
+        
+        if (balanceData.success && balanceData.balance !== undefined) {
+            updateWalletBalance(balanceData.balance);
+            console.log('✅ Balance loaded:', balanceData.balance);
         }
         
-        // Process transactions
-        if (transactionsResponse.ok) {
-            const transactionsData = await transactionsResponse.json();
-            if (transactionsData.success) {
-                loadTransactionHistory(transactionsData.transactions);
-                console.log('✅ Transactions loaded:', transactionsData.transactions.length);
-            }
+        /* ✅ API CALL TO BACKEND - GET TRANSACTION HISTORY */
+        const transactionsResponse = await fetch(`${BACKEND_URL}/api/wallet/transactions`, {
+            method: 'GET',
+            headers: getAuthHeaders()
+        });
+        
+        const transactionsData = await transactionsResponse.json();
+        console.log('📊 Transactions response:', transactionsData);
+        
+        if (transactionsData.success && transactionsData.transactions) {
+            loadTransactionHistory(transactionsData.transactions);
+            console.log('✅ Transactions loaded:', transactionsData.transactions.length);
+        } else {
+            // Show empty state
+            loadTransactionHistory([]);
         }
         
         // Show content
@@ -115,7 +99,7 @@ async function loadWalletData() {
         
     } catch (error) {
         console.error('❌ Wallet loading error:', error);
-        showError('Failed to load wallet data');
+        showError('Failed to load wallet data. Please check your connection.');
     } finally {
         isRefreshing = false;
     }
@@ -132,6 +116,7 @@ function updateWalletBalance(balance) {
         balanceEl.style.transform = 'scale(1.05)';
         setTimeout(() => {
             balanceEl.style.transform = 'scale(1)';
+            balanceEl.style.transition = 'transform 0.3s ease';
         }, 300);
     }
 }
@@ -151,7 +136,12 @@ function loadTransactionHistory(transactions) {
     // Clear and populate with real data
     historyList.innerHTML = '';
     
-    transactions.forEach(transaction => {
+    // Sort transactions by date (newest first)
+    const sortedTransactions = transactions.sort((a, b) => 
+        new Date(b.created_at || b.timestamp) - new Date(a.created_at || a.timestamp)
+    );
+    
+    sortedTransactions.forEach(transaction => {
         const historyItem = createTransactionItem(transaction);
         historyList.appendChild(historyItem);
     });
@@ -165,15 +155,28 @@ function createTransactionItem(transaction) {
     const item = document.createElement('div');
     item.className = 'history-item';
     
-    const isCredit = transaction.type === 'credit';
+    // Determine transaction type and formatting
+    const isCredit = transaction.type === 'credit' || transaction.transaction_type === 'credit' || transaction.amount > 0;
     const amountColor = isCredit ? '#28a745' : '#dc2626';
     const amountPrefix = isCredit ? '+' : '-';
-    const amount = parseFloat(transaction.amount || 0).toFixed(2);
+    const amount = Math.abs(parseFloat(transaction.amount || 0)).toFixed(2);
+    
+    // Get transaction description
+    let description = 'Transaction';
+    if (transaction.reason) {
+        description = transaction.reason;
+    } else if (transaction.description) {
+        description = transaction.description;
+    } else if (transaction.transaction_type === 'add_money') {
+        description = 'Money Added to Wallet';
+    } else if (transaction.transaction_type === 'purchase') {
+        description = 'Number Purchase';
+    }
     
     item.innerHTML = `
         <div class="history-info">
-            <div class="history-desc">${transaction.reason || transaction.description || 'Transaction'}</div>
-            <div class="history-date">${formatDateTime(transaction.created_at)}</div>
+            <div class="history-desc">${description}</div>
+            <div class="history-date">${formatDateTime(transaction.created_at || transaction.timestamp)}</div>
         </div>
         <div class="history-amount" style="color: ${amountColor}">
             ${amountPrefix}₹${amount}
@@ -255,4 +258,9 @@ function goToAddMoney() {
     window.location.href = '/add-money';
 }
 
-console.log('✅ Real Wallet JavaScript loaded successfully');
+/* ✅ HANDLE PAGE ERRORS */
+window.addEventListener('error', function(e) {
+    console.error('Wallet page error:', e.error);
+});
+
+console.log('✅ Real Wallet JavaScript loaded successfully - Backend connected!');
