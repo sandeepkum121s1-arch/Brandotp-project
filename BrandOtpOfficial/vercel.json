@@ -1,0 +1,36 @@
+{
+  "rewrites": [
+    {
+      "source": "/api/(.*)",
+      "destination": "https://brandotp-project1.onrender.com/api/$1"
+    },
+    {
+      "source": "/signup",
+      "destination": "/signup.html"
+    },
+    {
+      "source": "/login",
+      "destination": "/login.html"
+    },
+    {
+      "source": "/dashboard", 
+      "destination": "/dashboard.html"
+    },
+    {
+      "source": "/add-money",
+      "destination": "/add-money.html"
+    },
+    {
+      "source": "/buy-number",
+      "destination": "/buy-number.html"
+    },
+    {
+      "source": "/history",
+      "destination": "/history.html"
+    },
+    {
+      "source": "/wallet",
+      "destination": "/wallet.html"
+    }
+  ]
+}
