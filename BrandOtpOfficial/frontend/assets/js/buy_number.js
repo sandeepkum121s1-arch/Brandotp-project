@@ -1,151 +1,384 @@
+// ===== BUY NUMBER SCRIPT - BACKEND CONNECTED =====
 console.log('🚀 Buy Number Script Loading...');
 
-let isLoading = false;
+// ✅ BACKEND URL CONSTANT
+const BACKEND_URL = 'https://brandotp-project1.onrender.com';
 
-window.onload = async function() {
-    console.log('🚀 Page loaded, starting data load...');
-    await loadData();
-}
+// Global data storage
+let countries = [];
+let allServices = []; 
+let filteredServices = [];
+let currentPurchase = null;
+let smsCheckInterval = null;
 
-async function loadData() {
-    setGlobalLoading(true);
-    
-    try {
-        // Load countries and services
-        await loadCountries();
-        await loadServices();
-        console.log('✅ Data loading completed');
-        
-    } catch (error) {
-        console.error('❌ Data loading failed:', error);
-        showResult('Data loading failed: ' + error.message, 'error');
-    } finally {
-        setGlobalLoading(false);
+// DOM elements
+const countrySelect = document.getElementById('countrySelect');
+const serviceSelect = document.getElementById('serviceSelect');
+const countrySearch = document.getElementById('countrySearch');
+const serviceSearch = document.getElementById('serviceSearch');
+const serviceCount = document.getElementById('serviceCount');
+const buyBtn = document.getElementById('buyBtn');
+const result = document.getElementById('result');
+const loadingOverlay = document.getElementById('loadingOverlay');
+
+// Number display elements
+const numberSection = document.getElementById('numberSection');
+const phoneNumber = document.getElementById('phoneNumber');
+const requestId = document.getElementById('requestId');
+const numberStatus = document.getElementById('numberStatus');
+
+// SMS display elements
+const smsSection = document.getElementById('smsSection');
+const smsFrom = document.getElementById('smsFrom');
+const smsMessage = document.getElementById('smsMessage');
+const smsCode = document.getElementById('smsCode');
+
+/* ✅ AUTHENTICATION CHECK */
+function checkAuth() {
+    const accessToken = localStorage.getItem('access_token');
+    if (!accessToken) {
+        console.log('❌ No authentication found, redirecting to login');
+        window.location.href = '/login';
+        return false;
     }
+    return true;
 }
+
+/* ✅ GET AUTH HEADERS */
+function getAuthHeaders() {
+    const accessToken = localStorage.getItem('access_token');
+    return {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json',
+        'Authorization': `Bearer ${accessToken}`
+    };
+}
+
+// Load data on page load
+document.addEventListener('DOMContentLoaded', function() {
+    console.log('✅ Buy Number DOM loaded');
+    if (!checkAuth()) return;
+    loadCountries();
+});
 
 async function loadCountries() {
-    console.log('🌍 Loading countries...');
+    loadingOverlay.style.display = 'flex';
     
     try {
-        const response = await fetch('/api/smsman/countries');
-        console.log('📡 Countries response status:', response.status);
-        
-        if (!response.ok) {
-            throw new Error(`Server error: ${response.status}`);
-        }
-        
-        const data = await response.json();
-        console.log('📊 Countries raw data:', data);
-        console.log('📊 Data type:', typeof data);
-        
-        // ✅ FIXED: Handle any data format
-        let countries = [];
-        
-        if (Array.isArray(data)) {
-            countries = data;
-        } else if (data && typeof data === 'object') {
-            // Convert object to array
-            countries = Object.values(data);
-        } else {
-            throw new Error('Invalid data format received');
-        }
-        
-        console.log('📋 Processed countries count:', countries.length);
-        
-        if (countries.length === 0) {
-            throw new Error('No countries found');
-        }
-        
-        // Populate dropdown
-        const select = document.getElementById("country");
-        select.innerHTML = '<option value="">Select Country</option>';
-        
-        countries.forEach((country, index) => {
-            const option = document.createElement("option");
-            
-            // Handle different object structures
-            const id = country.id || country.country_id || index + 1;
-            const name = country.title || country.name || country.country || `Country ${id}`;
-            const code = country.code || country.country_code || '';
-            
-            option.value = id;
-            option.textContent = code ? `${name} (${code})` : name;
-            select.appendChild(option);
+        /* ✅ API CALL TO BACKEND - GET COUNTRIES */
+        const response = await fetch(`${BACKEND_URL}/api/smsman/countries`, {
+            method: 'GET',
+            headers: getAuthHeaders()
         });
         
-        console.log('✅ Countries loaded successfully');
+        const data = await response.json();
+        console.log('🌍 Countries response:', data);
+        
+        if (data.success && data.countries) {
+            countries = data.countries;
+            populateCountries();
+        } else {
+            throw new Error(data.detail || 'Failed to load countries');
+        }
         
     } catch (error) {
-        console.error('❌ Countries failed:', error);
+        console.error('❌ Error loading countries:', error);
+        showError('Failed to load countries. Please refresh the page.');
         loadFallbackCountries();
+    } finally {
+        loadingOverlay.style.display = 'none';
     }
 }
 
-async function loadServices() {
-    console.log('🛠️ Loading services...');
+// Load services when country changes
+async function loadServicesForCountry(countryId) {
+    serviceSelect.innerHTML = '<option value="">🔄 Loading services...</option>';
+    serviceSearch.disabled = true;
+    serviceSearch.placeholder = 'Loading services...';
+    serviceCount.textContent = '';
     
     try {
-        const response = await fetch('/api/smsman/services');
-        console.log('📡 Services response status:', response.status);
-        
-        if (!response.ok) {
-            throw new Error(`Server error: ${response.status}`);
-        }
-        
-        const data = await response.json();
-        console.log('📊 Services raw data:', data);
-        console.log('📊 Data type:', typeof data);
-        
-        // ✅ FIXED: Handle any data format
-        let services = [];
-        
-        if (Array.isArray(data)) {
-            services = data;
-        } else if (data && typeof data === 'object') {
-            // Convert object to array
-            services = Object.values(data);
-        } else {
-            throw new Error('Invalid data format received');
-        }
-        
-        console.log('📋 Processed services count:', services.length);
-        
-        if (services.length === 0) {
-            throw new Error('No services found');
-        }
-        
-        // Populate dropdown
-        const select = document.getElementById("service");
-        select.innerHTML = '<option value="">Select Service</option>';
-        
-        services.forEach((service, index) => {
-            const option = document.createElement("option");
-            
-            // Handle different object structures
-            const id = service.id || service.service_id || index + 1;
-            const name = service.name || service.title || service.service || `Service ${id}`;
-            
-            option.value = id;
-            option.textContent = name;
-            select.appendChild(option);
+        /* ✅ API CALL TO BACKEND - GET SERVICES FOR COUNTRY */
+        const response = await fetch(`${BACKEND_URL}/api/smsman/services/${countryId}`, {
+            method: 'GET',
+            headers: getAuthHeaders()
         });
         
-        console.log('✅ Services loaded successfully');
+        const data = await response.json();
+        console.log(`🛠️ Services for country ${countryId}:`, data);
+        
+        if (data.success && data.services && data.services.length > 0) {
+            allServices = data.services;
+            filteredServices = [...allServices];
+            
+            populateServices();
+            updateServiceSearch();
+            
+            console.log(`✅ Loaded ${allServices.length} services for country ${countryId}`);
+        } else {
+            serviceSelect.innerHTML = '<option value="">❌ No services available for this country</option>';
+            allServices = [];
+            filteredServices = [];
+            serviceSearch.disabled = true;
+            serviceSearch.placeholder = 'No services available';
+            serviceCount.textContent = '';
+        }
         
     } catch (error) {
-        console.error('❌ Services failed:', error);
-        loadFallbackServices();
+        console.error('❌ Error loading services:', error);
+        serviceSelect.innerHTML = '<option value="">❌ Error loading services</option>';
+        allServices = [];
+        filteredServices = [];
+        serviceSearch.disabled = true;
+        serviceSearch.placeholder = 'Error loading services';
+        serviceCount.textContent = '';
     }
 }
 
-// Fallback functions
+function populateCountries() {
+    countrySelect.innerHTML = '<option value="">Select Country</option>';
+    
+    countries.forEach(country => {
+        const option = document.createElement('option');
+        option.value = country.id;
+        option.textContent = `${country.title} (${country.code})`;
+        countrySelect.appendChild(option);
+    });
+}
+
+function populateServices() {
+    serviceSelect.innerHTML = '<option value="">Select Service</option>';
+    
+    filteredServices.forEach(service => {
+        const option = document.createElement('option');
+        option.value = service.id;
+        option.textContent = `${service.name} - ${service.display_price}`;
+        serviceSelect.appendChild(option);
+    });
+    
+    updateServiceCount();
+}
+
+function updateServiceSearch() {
+    serviceSearch.disabled = false;
+    serviceSearch.placeholder = 'Search services... (e.g., WhatsApp, Telegram, Instagram)';
+    serviceSearch.value = '';
+}
+
+function updateServiceCount() {
+    if (allServices.length > 0) {
+        serviceCount.textContent = `Showing ${filteredServices.length} of ${allServices.length} services`;
+    } else {
+        serviceCount.textContent = '';
+    }
+}
+
+// Country change handler
+countrySelect.addEventListener('change', function(e) {
+    const countryId = parseInt(e.target.value);
+    
+    if (countryId) {
+        loadServicesForCountry(countryId);
+    } else {
+        serviceSelect.innerHTML = '<option value="">Select country first...</option>';
+        allServices = [];
+        filteredServices = [];
+        serviceSearch.disabled = true;
+        serviceSearch.placeholder = 'Select country first...';
+        serviceSearch.value = '';
+        serviceCount.textContent = '';
+    }
+});
+
+// Service search functionality
+serviceSearch.addEventListener('input', function() {
+    const searchTerm = this.value.toLowerCase().trim();
+    
+    if (searchTerm.length < 1) {
+        filteredServices = [...allServices];
+    } else {
+        filteredServices = allServices.filter(service => 
+            service.name.toLowerCase().includes(searchTerm) ||
+            service.display_price.toLowerCase().includes(searchTerm)
+        );
+    }
+    
+    populateServices();
+    console.log(`🔍 Service search: "${searchTerm}" - Found ${filteredServices.length} services`);
+});
+
+// Country search functionality
+countrySearch.addEventListener('input', function() {
+    const searchTerm = this.value.toLowerCase();
+    
+    if (searchTerm.length < 1) {
+        populateCountries();
+        return;
+    }
+    
+    const filteredCountries = countries.filter(country => 
+        country.title.toLowerCase().includes(searchTerm) ||
+        country.code.toLowerCase().includes(searchTerm)
+    );
+    
+    countrySelect.innerHTML = '<option value="">Select Country</option>';
+    
+    filteredCountries.forEach(country => {
+        const option = document.createElement('option');
+        option.value = country.id;
+        option.textContent = `${country.title} (${country.code})`;
+        countrySelect.appendChild(option);
+    });
+});
+
+// Form submission - BUY NUMBER
+document.getElementById('buyNumberForm').addEventListener('submit', async function(e) {
+    e.preventDefault();
+    
+    const countryId = countrySelect.value;
+    const serviceId = serviceSelect.value;
+    
+    if (!countryId || !serviceId) {
+        showError('Please select both country and service.');
+        return;
+    }
+    
+    buyBtn.disabled = true;
+    buyBtn.textContent = '🔄 Purchasing...';
+    result.innerHTML = '';
+    
+    // Hide previous results
+    numberSection.style.display = 'none';
+    smsSection.style.display = 'none';
+    
+    try {
+        /* ✅ API CALL TO BACKEND - BUY NUMBER */
+        const response = await fetch(`${BACKEND_URL}/api/smsman/buy`, {
+            method: 'POST',
+            headers: getAuthHeaders(),
+            body: JSON.stringify({
+                application_id: parseInt(serviceId),
+                country_id: parseInt(countryId)
+            })
+        });
+        
+        const data = await response.json();
+        console.log('🛒 Buy Number response:', data);
+        
+        if (data.success && data.number && data.request_id) {
+            // Store purchase info
+            currentPurchase = {
+                number: data.number,
+                request_id: data.request_id,
+                service_id: serviceId,
+                country_id: countryId
+            };
+            
+            // Display the number
+            displayPurchasedNumber(data);
+            
+            // Start checking for SMS automatically
+            startSMSChecking();
+            
+        } else {
+            showError(data.detail || data.error || 'Failed to purchase number. Please try again.');
+        }
+        
+    } catch (error) {
+        console.error('❌ Purchase error:', error);
+        showError(`Purchase failed: ${error.message}`);
+    } finally {
+        buyBtn.disabled = false;
+        buyBtn.textContent = '🛒 Buy Number';
+    }
+});
+
+function displayPurchasedNumber(data) {
+    phoneNumber.textContent = data.number;
+    requestId.textContent = data.request_id;
+    numberStatus.textContent = 'Waiting for SMS';
+    numberStatus.className = 'status-badge status-waiting';
+    
+    numberSection.style.display = 'block';
+    showSuccess('✅ Number purchased successfully! Waiting for SMS...');
+}
+
+function startSMSChecking() {
+    // Check immediately, then every 10 seconds
+    checkForSMS();
+    
+    smsCheckInterval = setInterval(checkForSMS, 10000);
+    
+    // Stop checking after 5 minutes
+    setTimeout(() => {
+        if (smsCheckInterval) {
+            clearInterval(smsCheckInterval);
+            smsCheckInterval = null;
+            numberStatus.textContent = 'SMS Timeout';
+            numberStatus.className = 'status-badge';
+            numberStatus.style.background = '#f8d7da';
+            numberStatus.style.color = '#721c24';
+        }
+    }, 300000);
+}
+
+async function checkForSMS() {
+    if (!currentPurchase) return;
+    
+    try {
+        /* ✅ API CALL TO BACKEND - CHECK SMS */
+        const response = await fetch(`${BACKEND_URL}/api/smsman/get-sms`, {
+            method: 'POST',
+            headers: getAuthHeaders(),
+            body: JSON.stringify({
+                request_id: currentPurchase.request_id
+            })
+        });
+        
+        const data = await response.json();
+        console.log('📨 SMS Check response:', data);
+        
+        if (data.success && data.sms_code) {
+            // SMS received!
+            displaySMS({
+                code: data.sms_code,
+                message: data.sms_text || `Your verification code: ${data.sms_code}`,
+                from: data.sender || 'Service'
+            });
+            
+            // Stop checking
+            if (smsCheckInterval) {
+                clearInterval(smsCheckInterval);
+                smsCheckInterval = null;
+            }
+            
+            numberStatus.textContent = 'SMS Received';
+            numberStatus.className = 'status-badge status-active';
+            
+        } else if (data.status === 'waiting') {
+            console.log('Still waiting for SMS...');
+        } else {
+            console.log('SMS check result:', data);
+        }
+        
+    } catch (error) {
+        console.error('❌ SMS check error:', error);
+    }
+}
+
+function displaySMS(smsData) {
+    smsFrom.textContent = smsData.from;
+    smsMessage.textContent = smsData.message;
+    smsCode.textContent = smsData.code;
+    
+    smsSection.style.display = 'block';
+    showSuccess('🎉 SMS received! Your verification code is ready.');
+}
+
+// Fallback countries in case API fails
 function loadFallbackCountries() {
     console.log('🔄 Loading fallback countries...');
-    const select = document.getElementById("country");
-    select.innerHTML = '<option value="">Select Country</option>';
-    
-    const countries = [
+    const fallbackCountries = [
         {id: 1, title: "Russia", code: "RU"},
         {id: 2, title: "Ukraine", code: "UA"}, 
         {id: 7, title: "Kazakhstan", code: "KZ"},
@@ -155,102 +388,26 @@ function loadFallbackCountries() {
         {id: 1, title: "USA", code: "US"}
     ];
     
-    countries.forEach(country => {
-        const option = document.createElement("option");
-        option.value = country.id;
-        option.textContent = `${country.title} (${country.code})`;
-        select.appendChild(option);
-    });
-    
+    countries = fallbackCountries;
+    populateCountries();
     console.log('✅ Fallback countries loaded');
 }
 
-function loadFallbackServices() {
-    console.log('🔄 Loading fallback services...');
-    const select = document.getElementById("service");
-    select.innerHTML = '<option value="">Select Service</option>';
-    
-    const services = [
-        {id: 1, name: "Telegram"},
-        {id: 2, name: "WhatsApp"},
-        {id: 12, name: "Instagram"},
-        {id: 130, name: "Discord"},
-        {id: 22, name: "Facebook"}
-    ];
-    
-    services.forEach(service => {
-        const option = document.createElement("option");
-        option.value = service.id;
-        option.textContent = service.name;
-        select.appendChild(option);
-    });
-    
-    console.log('✅ Fallback services loaded');
+function showError(message) {
+    result.innerHTML = `<div class="error">❌ ${message}</div>`;
 }
 
-async function buyNumber() {
-    const countryId = document.getElementById("country").value;
-    const applicationId = document.getElementById("service").value;
-    
-    if (!countryId || !applicationId) {
-        showResult('⚠️ Please select both country and service', 'error');
-        return;
-    }
-    
-    try {
-        setButtonLoading(true);
-        console.log(`🛒 Buying number: Country=${countryId}, Service=${applicationId}`);
-        
-        const response = await fetch('/api/smsman/buy', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                countryId: parseInt(countryId),
-                applicationId: parseInt(applicationId)
-            })
-        });
-        
-        const data = await response.json();
-        console.log('📊 Buy response:', data);
-        
-        if (data.number) {
-            showResult(`✅ Success! Number: ${data.number}`, 'success');
-        } else {
-            showResult(`❌ ${data.message || 'Purchase failed'}`, 'error');
-        }
-        
-    } catch (error) {
-        console.error('❌ Buy failed:', error);
-        showResult(`❌ Error: ${error.message}`, 'error');
-    } finally {
-        setButtonLoading(false);
-    }
+function showSuccess(message) {
+    result.innerHTML = `<div class="success">✅ ${message}</div>`;
 }
 
-function setGlobalLoading(loading) {
-    const container = document.querySelector('.container');
-    if (loading) {
-        container.classList.add('loading');
-    } else {
-        container.classList.remove('loading');
-    }
+function showInfo(message) {
+    result.innerHTML = `<div class="info">ℹ️ ${message}</div>`;
 }
 
-function setButtonLoading(loading) {
-    const btn = document.getElementById('buy-btn');
-    if (loading) {
-        btn.disabled = true;
-        btn.textContent = '⏳ Buying...';
-    } else {
-        btn.disabled = false;
-        btn.textContent = '🛒 Buy Number';
-    }
-}
+/* ✅ HANDLE PAGE ERRORS */
+window.addEventListener('error', function(e) {
+    console.error('Buy Number page error:', e.error);
+});
 
-function showResult(message, type) {
-    const resultBox = document.getElementById('result');
-    resultBox.textContent = message;
-    resultBox.className = `result-box ${type}`;
-}
-
-console.log('✅ Buy Number Script Loaded');
+console.log('✅ Buy Number script loaded successfully - Backend connected!');
