@@ -94,6 +94,10 @@
         .instagram { background: #e4405f; }
         .google { background: #4285f4; }
         .facebook { background: #1877f2; }
+        .discord { background: #7289da; }
+        .twitter { background: #1da1f2; }
+        .youtube { background: #ff0000; }
+        .default { background: #6b7280; }
         
         .status { 
             padding: 4px 8px; 
@@ -104,6 +108,7 @@
         .active { background: #fef3c7; color: #92400e; }
         .completed { background: #d1fae5; color: #065f46; }
         .expired { background: #fee2e2; color: #991b1b; }
+        .pending { background: #e0e7ff; color: #3730a3; }
         
         .sms-status {
             padding: 4px 8px; 
@@ -191,30 +196,71 @@
             </table>
             
             <div id="emptyState" class="empty-state" style="display: none;">
-                <h3>No purchase history found</h3>
+                <h3>📱 No purchase history found</h3>
                 <p>You haven't purchased any numbers yet. <a href="/buy-number">Buy your first number</a></p>
             </div>
             
             <div id="errorState" class="empty-state" style="display: none;">
-                <h3>Error loading history</h3>
-                <p>Please try refreshing the page.</p>
+                <h3>❌ Error loading history</h3>
+                <p>Please check your connection and try refreshing the page.</p>
+                <button onclick="loadData()" class="refresh-btn" style="margin-top: 20px;">🔄 Try Again</button>
             </div>
         </div>
     </div>
 
     <script>
+        // ===== HISTORY.JS - BACKEND CONNECTED =====
+        console.log('📱 Number History JS loaded');
+
+        // ✅ BACKEND URL CONSTANT
+        const BACKEND_URL = 'https://brandotp-project1.onrender.com';
+
+        /* ✅ AUTHENTICATION CHECK */
+        function checkAuth() {
+            const accessToken = localStorage.getItem('access_token');
+            if (!accessToken) {
+                console.log('❌ No authentication found, redirecting to login');
+                window.location.href = '/login';
+                return false;
+            }
+            return true;
+        }
+
+        /* ✅ GET AUTH HEADERS */
+        function getAuthHeaders() {
+            const accessToken = localStorage.getItem('access_token');
+            return {
+                'Content-Type': 'application/json',
+                'Accept': 'application/json',
+                'Authorization': `Bearer ${accessToken}`
+            };
+        }
+
+        /* ✅ LOAD PURCHASE HISTORY FROM BACKEND */
         async function loadData() {
+            console.log('🔄 Loading purchase history...');
+            
+            // Check authentication first
+            if (!checkAuth()) return;
+            
+            // Reset UI states
             document.getElementById('loading').style.display = 'block';
             document.getElementById('historyTable').style.display = 'none';
             document.getElementById('emptyState').style.display = 'none';
             document.getElementById('errorState').style.display = 'none';
             
             try {
-                const response = await fetch('/api/history/numbers');
+                /* ✅ API CALL TO BACKEND - GET PURCHASE HISTORY */
+                const response = await fetch(`${BACKEND_URL}/api/smsman/history`, {
+                    method: 'GET',
+                    headers: getAuthHeaders()
+                });
+                
                 const data = await response.json();
+                console.log('📊 History response:', data);
                 
                 if (!data.success) {
-                    throw new Error(data.error);
+                    throw new Error(data.detail || data.message || 'Failed to load history');
                 }
                 
                 if (data.history && data.history.length > 0) {
@@ -225,61 +271,132 @@
                 }
                 
             } catch (error) {
-                console.error('Error:', error);
+                console.error('❌ History loading error:', error);
                 document.getElementById('loading').style.display = 'none';
                 document.getElementById('errorState').style.display = 'block';
             }
         }
         
+        /* ✅ DISPLAY PURCHASE HISTORY */
         function showHistory(history) {
             const tbody = document.getElementById('historyBody');
             tbody.innerHTML = '';
             
-            history.forEach(item => {
+            // Sort history by date (newest first)
+            const sortedHistory = history.sort((a, b) => 
+                new Date(b.created_at || b.dateTime || b.date) - new Date(a.created_at || a.dateTime || a.date)
+            );
+            
+            sortedHistory.forEach(item => {
                 const row = document.createElement('tr');
+                
+                // Get service name and apply proper class
+                const serviceName = (item.service || item.service_name || 'Unknown').toLowerCase();
+                const serviceClass = getServiceClass(serviceName);
+                
+                // Get phone number
+                const phoneNumber = item.phoneNumber || item.phone_number || item.number || 'N/A';
+                
+                // Get country
+                const country = item.country || item.country_name || 'N/A';
+                
+                // Get amount
+                const amount = item.amount || item.cost || item.price || '0';
+                const formattedAmount = typeof amount === 'number' ? `₹${amount.toFixed(2)}` : `₹${amount}`;
+                
+                // Get SMS status
+                const smsStatus = (item.smsStatus || item.sms_status || 'waiting').toLowerCase();
+                
+                // Get order status
+                const orderStatus = (item.orderStatus || item.order_status || item.status || 'pending').toLowerCase();
+                
+                // Get order ID
+                const orderId = item.orderId || item.order_id || item.request_id || item.id || 'N/A';
+                
+                // Get date
+                const dateTime = item.dateTime || item.created_at || item.date || new Date().toISOString();
+                
                 row.innerHTML = `
-                    <td><strong>${item.orderId}</strong></td>
-                    <td><span class="service ${item.service.toLowerCase()}">${item.service.toUpperCase()}</span></td>
-                    <td><span class="phone-number">${item.phoneNumber}</span></td>
-                    <td>${item.country}</td>
-                    <td><span class="amount">${item.amount}</span></td>
-                    <td><span class="sms-status ${item.smsStatus}">${item.smsStatus.toUpperCase()}</span></td>
-                    <td><span class="status ${item.orderStatus}">${item.orderStatus.toUpperCase()}</span></td>
-                    <td>${formatDateTime(item.dateTime)}</td>
+                    <td><strong>${orderId}</strong></td>
+                    <td><span class="service ${serviceClass}">${serviceName.toUpperCase()}</span></td>
+                    <td><span class="phone-number">${phoneNumber}</span></td>
+                    <td>${country}</td>
+                    <td><span class="amount">${formattedAmount}</span></td>
+                    <td><span class="sms-status ${smsStatus}">${smsStatus.toUpperCase()}</span></td>
+                    <td><span class="status ${orderStatus}">${orderStatus.toUpperCase()}</span></td>
+                    <td>${formatDateTime(dateTime)}</td>
                 `;
                 tbody.appendChild(row);
             });
             
             document.getElementById('loading').style.display = 'none';
             document.getElementById('historyTable').style.display = 'table';
+            
+            console.log('✅ History displayed:', history.length + ' items');
         }
         
-        function formatDateTime(dateString) {
-            const date = new Date(dateString);
-            const now = new Date();
-            const diff = now - date;
-            const minutes = Math.floor(diff / 60000);
-            const hours = Math.floor(minutes / 60);
-            const days = Math.floor(hours / 24);
+        /* ✅ GET SERVICE CSS CLASS */
+        function getServiceClass(serviceName) {
+            const service = serviceName.toLowerCase();
             
-            if (minutes < 60) {
-                return `${minutes} minutes ago`;
-            } else if (hours < 24) {
-                return `${hours} hours ago`;
-            } else if (days === 1) {
-                return 'Yesterday';
-            } else if (days < 7) {
-                return `${days} days ago`;
-            } else {
-                return date.toLocaleDateString() + ' ' + date.toLocaleTimeString();
+            if (service.includes('whatsapp')) return 'whatsapp';
+            if (service.includes('telegram')) return 'telegram';
+            if (service.includes('instagram')) return 'instagram';
+            if (service.includes('google')) return 'google';
+            if (service.includes('facebook')) return 'facebook';
+            if (service.includes('discord')) return 'discord';
+            if (service.includes('twitter')) return 'twitter';
+            if (service.includes('youtube')) return 'youtube';
+            
+            return 'default';
+        }
+        
+        /* ✅ FORMAT DATE TIME */
+        function formatDateTime(dateString) {
+            try {
+                const date = new Date(dateString);
+                const now = new Date();
+                const diff = now - date;
+                const minutes = Math.floor(diff / 60000);
+                const hours = Math.floor(minutes / 60);
+                const days = Math.floor(hours / 24);
+                
+                if (minutes < 1) {
+                    return 'Just now';
+                } else if (minutes < 60) {
+                    return `${minutes} minute${minutes > 1 ? 's' : ''} ago`;
+                } else if (hours < 24) {
+                    return `${hours} hour${hours > 1 ? 's' : ''} ago`;
+                } else if (days === 1) {
+                    return 'Yesterday';
+                } else if (days < 7) {
+                    return `${days} day${days > 1 ? 's' : ''} ago`;
+                } else {
+                    return date.toLocaleDateString('en-IN') + ' at ' + date.toLocaleTimeString('en-IN', {
+                        hour: '2-digit',
+                        minute: '2-digit'
+                    });
+                }
+            } catch (error) {
+                return 'Unknown date';
             }
         }
         
-        // Page load par data load karo
-        document.addEventListener('DOMContentLoaded', loadData);
+        /* ✅ INITIALIZATION */
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('📱 History page DOM loaded');
+            loadData();
+        });
         
-        // Auto refresh every 30 seconds
+        /* ✅ AUTO REFRESH EVERY 30 SECONDS */
         setInterval(loadData, 30000);
+        
+        /* ✅ HANDLE PAGE ERRORS */
+        window.addEventListener('error', function(e) {
+            console.error('History page error:', e.error);
+        });
+        
+        console.log('✅ History script loaded successfully - Backend connected!');
     </script>
 </body>
 </html>
