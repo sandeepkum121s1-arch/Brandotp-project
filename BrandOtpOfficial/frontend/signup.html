@@ -121,6 +121,9 @@
     </div>
 
     <script>
+        // ✅ BACKEND URL CONSTANT
+        const BACKEND_URL = 'https://brandotp-project1.onrender.com';
+        
         document.getElementById('signupForm').addEventListener('submit', async function(e) {
             e.preventDefault();
             
@@ -144,7 +147,8 @@
             clearMessage();
             
             try {
-                const response = await fetch('/api/auth/signup', {
+                // ✅ UPDATED: Use BACKEND_URL instead of relative path
+                const response = await fetch(`${BACKEND_URL}/api/auth/signup`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
