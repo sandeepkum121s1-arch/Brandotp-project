@@ -35,6 +35,14 @@
       "destination": "/BrandOtpOfficial/frontend/wallet.html"
     },
     {
+      "source": "/auth",
+      "destination": "/BrandOtpOfficial/frontend/auth.html"
+    },
+    {
+      "source": "/payment-success",
+      "destination": "/BrandOtpOfficial/frontend/payment-success.html"
+    },
+    {
       "source": "/api/(.*)",
       "destination": "https://brandotp-project1.onrender.com/api/$1"
     }
