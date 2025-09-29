@@ -5,32 +5,36 @@
       "destination": "https://brandotp-project1.onrender.com/api/$1"
     },
     {
+      "source": "/",
+      "destination": "/frontend/index.html"
+    },
+    {
       "source": "/signup",
-      "destination": "/signup.html"
+      "destination": "/frontend/signup.html"
     },
     {
       "source": "/login",
-      "destination": "/login.html"
+      "destination": "/frontend/login.html"
     },
     {
       "source": "/dashboard", 
-      "destination": "/dashboard.html"
+      "destination": "/frontend/dashboard.html"
     },
     {
       "source": "/add-money",
-      "destination": "/add-money.html"
+      "destination": "/frontend/add-money.html"
     },
     {
       "source": "/buy-number",
-      "destination": "/buy-number.html"
+      "destination": "/frontend/buy-number.html"
     },
     {
       "source": "/history",
-      "destination": "/history.html"
+      "destination": "/frontend/history.html"
     },
     {
       "source": "/wallet",
-      "destination": "/wallet.html"
+      "destination": "/frontend/wallet.html"
     }
   ]
 }
