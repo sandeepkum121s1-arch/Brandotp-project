@@ -5,7 +5,7 @@ import asyncio
 from typing import List, Dict, Any, Optional
 
 # Load API key from environment
-SMSMAN_API_KEY = os.getenv("SMSMAN_API_KEY")
+SMSMAN_API_KEY = "1fR_ELelgg0Qbru8hzTavD4qf2FRdxC8"
 SMSMAN_BASE_URL = "https://api.sms-man.com/control"
 
 # Pricing configuration
@@ -654,3 +654,4 @@ async def get_sms(request_id: str) -> Dict[str, Any]:
         
     except Exception as e:
         return {"error": str(e), "status": "error"}
+
