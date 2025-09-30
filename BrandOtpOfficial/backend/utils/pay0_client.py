@@ -2,7 +2,7 @@
 import os, requests, uuid, typing as t
 
 BASE_URL  = "https://pay0.shop/api"
-USER_TOKEN = os.getenv("PAY0_USER_TOKEN")        # put in .env
+USER_TOKEN = os.getenv("PAY0_API_KEY")        # put in .env
 
 def _post(endpoint: str, data: dict) -> dict:
     resp = requests.post(
@@ -30,3 +30,4 @@ def create_order(mobile: str, amount: float, redirect: str,
 def check_status(order_id: str) -> dict:
     return _post("/check-order-status",
                  {"user_token": USER_TOKEN, "order_id": order_id})
+
