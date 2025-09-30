@@ -21,7 +21,7 @@ from backend.routes import register_all_routers
 from backend.routes.smsman_numbers import router as smsman_router
 
 # PAY0 Configuration
-PAY0_USER_TOKEN = "your-live-or-test-token"
+PAY0_USER_TOKEN = os.getenv("PAY0_API_KEY")
 
 # Security
 security = HTTPBearer(auto_error=False)
@@ -719,5 +719,6 @@ async def get_current_user_info(request: Request):
             status_code=401,
             content={"success": False, "error": "Authentication required"}
         )
+
 
 
