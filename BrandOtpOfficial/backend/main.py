@@ -19,6 +19,10 @@ load_dotenv()
 # Import custom routers
 from backend.routes import register_all_routers
 from backend.routes.smsman_numbers import router as smsman_router
+# main.py में add करें
+from backend.routes.wallet import router as wallet_router
+
+app.include_router(wallet_router, prefix="/api/wallet", tags=["wallet"])
 
 # PAY0 Configuration
 PAY0_USER_TOKEN = os.getenv("PAY0_API_KEY")
@@ -719,6 +723,7 @@ async def get_current_user_info(request: Request):
             status_code=401,
             content={"success": False, "error": "Authentication required"}
         )
+
 
 
 
