@@ -12,6 +12,8 @@ import sqlite3
 import time
 from contextlib import suppress
 from typing import Optional
+from dotenv import load_dotenv
+load_dotenv()
 
 
 # Import custom routers
@@ -717,4 +719,5 @@ async def get_current_user_info(request: Request):
             status_code=401,
             content={"success": False, "error": "Authentication required"}
         )
+
 
