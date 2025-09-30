@@ -1,8 +1,8 @@
-// ===== BUY NUMBER SCRIPT - BACKEND CONNECTED =====
+// ===== BUY NUMBER SCRIPT - NETLIFY READY VERSION =====
 console.log('🚀 Buy Number Script Loading...');
 
-// ✅ BACKEND URL CONSTANT
-const BACKEND_URL = 'https://brandotp-project1.onrender.com';
+// ✅ NETLIFY PROXY - EMPTY BACKEND URL (Netlify will handle routing)
+const BACKEND_URL = '';
 
 // Global data storage
 let countries = [];
@@ -33,31 +33,17 @@ const smsFrom = document.getElementById('smsFrom');
 const smsMessage = document.getElementById('smsMessage');
 const smsCode = document.getElementById('smsCode');
 
-/* ✅ AUTHENTICATION CHECK */
-function checkAuth() {
-    const accessToken = localStorage.getItem('access_token');
-    if (!accessToken) {
-        console.log('❌ No authentication found, redirecting to login');
-        window.location.href = '/login';
-        return false;
-    }
-    return true;
-}
-
-/* ✅ GET AUTH HEADERS */
-function getAuthHeaders() {
-    const accessToken = localStorage.getItem('access_token');
+/* ✅ SIMPLE HEADERS - NO AUTH REQUIRED */
+function getHeaders() {
     return {
         'Content-Type': 'application/json',
-        'Accept': 'application/json',
-        'Authorization': `Bearer ${accessToken}`
+        'Accept': 'application/json'
     };
 }
 
 // Load data on page load
 document.addEventListener('DOMContentLoaded', function() {
-    console.log('✅ Buy Number DOM loaded');
-    if (!checkAuth()) return;
+    console.log('✅ Buy Number DOM loaded - Starting without auth check');
     loadCountries();
 });
 
@@ -65,25 +51,34 @@ async function loadCountries() {
     loadingOverlay.style.display = 'flex';
     
     try {
-        /* ✅ API CALL TO BACKEND - GET COUNTRIES */
-        const response = await fetch(`${BACKEND_URL}/api/smsman/countries`, {
+        /* ✅ NETLIFY PROXY API CALL - YOUR TOML WILL HANDLE ROUTING */
+        console.log('🌍 Fetching countries via Netlify proxy...');
+        
+        const response = await fetch('/api/smsman/countries', {
             method: 'GET',
-            headers: getAuthHeaders()
+            headers: getHeaders()
         });
         
-        const data = await response.json();
-        console.log('🌍 Countries response:', data);
+        console.log('🌍 Countries response status:', response.status);
         
-        if (data.success && data.countries) {
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        
+        const data = await response.json();
+        console.log('🌍 Countries response data:', data);
+        
+        if (data.success && data.countries && data.countries.length > 0) {
             countries = data.countries;
             populateCountries();
+            showSuccess(`✅ Loaded ${countries.length} countries successfully!`);
         } else {
-            throw new Error(data.detail || 'Failed to load countries');
+            throw new Error(data.detail || 'No countries found in response');
         }
         
     } catch (error) {
         console.error('❌ Error loading countries:', error);
-        showError('Failed to load countries. Please refresh the page.');
+        showError('Failed to load countries from server. Using fallback countries for testing...');
         loadFallbackCountries();
     } finally {
         loadingOverlay.style.display = 'none';
@@ -98,11 +93,19 @@ async function loadServicesForCountry(countryId) {
     serviceCount.textContent = '';
     
     try {
-        /* ✅ API CALL TO BACKEND - GET SERVICES FOR COUNTRY */
-        const response = await fetch(`${BACKEND_URL}/api/smsman/services/${countryId}`, {
+        /* ✅ NETLIFY PROXY API CALL */
+        console.log(`🛠️ Fetching services for country ${countryId} via Netlify proxy...`);
+        
+        const response = await fetch(`/api/smsman/services/${countryId}`, {
             method: 'GET',
-            headers: getAuthHeaders()
+            headers: getHeaders()
         });
+        
+        console.log(`🛠️ Services response status for country ${countryId}:`, response.status);
+        
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
         
         const data = await response.json();
         console.log(`🛠️ Services for country ${countryId}:`, data);
@@ -114,6 +117,7 @@ async function loadServicesForCountry(countryId) {
             populateServices();
             updateServiceSearch();
             
+            showInfo(`✅ Loaded ${allServices.length} services for selected country`);
             console.log(`✅ Loaded ${allServices.length} services for country ${countryId}`);
         } else {
             serviceSelect.innerHTML = '<option value="">❌ No services available for this country</option>';
@@ -122,6 +126,7 @@ async function loadServicesForCountry(countryId) {
             serviceSearch.disabled = true;
             serviceSearch.placeholder = 'No services available';
             serviceCount.textContent = '';
+            showError('No services available for this country');
         }
         
     } catch (error) {
@@ -132,6 +137,7 @@ async function loadServicesForCountry(countryId) {
         serviceSearch.disabled = true;
         serviceSearch.placeholder = 'Error loading services';
         serviceCount.textContent = '';
+        showError('Error loading services from server');
     }
 }
 
@@ -252,15 +258,23 @@ document.getElementById('buyNumberForm').addEventListener('submit', async functi
     smsSection.style.display = 'none';
     
     try {
-        /* ✅ API CALL TO BACKEND - BUY NUMBER */
-        const response = await fetch(`${BACKEND_URL}/api/smsman/buy`, {
+        /* ✅ NETLIFY PROXY API CALL - BUY NUMBER */
+        console.log('🛒 Buying number:', {serviceId, countryId});
+        
+        const response = await fetch('/api/smsman/buy', {
             method: 'POST',
-            headers: getAuthHeaders(),
+            headers: getHeaders(),
             body: JSON.stringify({
                 application_id: parseInt(serviceId),
                 country_id: parseInt(countryId)
             })
         });
+        
+        console.log('🛒 Buy response status:', response.status);
+        
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
         
         const data = await response.json();
         console.log('🛒 Buy Number response:', data);
@@ -318,6 +332,7 @@ function startSMSChecking() {
             numberStatus.className = 'status-badge';
             numberStatus.style.background = '#f8d7da';
             numberStatus.style.color = '#721c24';
+            showError('SMS timeout reached. Please try again or contact support.');
         }
     }, 300000);
 }
@@ -326,14 +341,19 @@ async function checkForSMS() {
     if (!currentPurchase) return;
     
     try {
-        /* ✅ API CALL TO BACKEND - CHECK SMS */
-        const response = await fetch(`${BACKEND_URL}/api/smsman/get-sms`, {
+        /* ✅ NETLIFY PROXY API CALL - CHECK SMS */
+        const response = await fetch('/api/smsman/get-sms', {
             method: 'POST',
-            headers: getAuthHeaders(),
+            headers: getHeaders(),
             body: JSON.stringify({
                 request_id: currentPurchase.request_id
             })
         });
+        
+        if (!response.ok) {
+            console.warn('SMS check failed:', response.status);
+            return;
+        }
         
         const data = await response.json();
         console.log('📨 SMS Check response:', data);
@@ -363,6 +383,7 @@ async function checkForSMS() {
         
     } catch (error) {
         console.error('❌ SMS check error:', error);
+        // Don't show error to user for SMS checks, just log it
     }
 }
 
@@ -377,7 +398,7 @@ function displaySMS(smsData) {
 
 // Fallback countries in case API fails
 function loadFallbackCountries() {
-    console.log('🔄 Loading fallback countries...');
+    console.log('🔄 Loading fallback countries for testing...');
     const fallbackCountries = [
         {id: 1, title: "Russia", code: "RU"},
         {id: 2, title: "Ukraine", code: "UA"}, 
@@ -385,12 +406,13 @@ function loadFallbackCountries() {
         {id: 16, title: "Philippines", code: "PH"},
         {id: 91, title: "India", code: "IN"},
         {id: 44, title: "United Kingdom", code: "GB"},
-        {id: 1, title: "USA", code: "US"}
+        {id: 840, title: "USA", code: "US"}
     ];
     
     countries = fallbackCountries;
     populateCountries();
-    console.log('✅ Fallback countries loaded');
+    console.log('✅ Fallback countries loaded - This is for testing only');
+    showInfo('Using fallback countries for testing. Please check your backend connection.');
 }
 
 function showError(message) {
@@ -410,4 +432,4 @@ window.addEventListener('error', function(e) {
     console.error('Buy Number page error:', e.error);
 });
 
-console.log('✅ Buy Number script loaded successfully - Backend connected!');
+console.log('✅ Buy Number script loaded successfully - Netlify Ready Version!');
