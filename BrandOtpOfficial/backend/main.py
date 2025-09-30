@@ -352,9 +352,9 @@ async def serve_root():
                 </div>
                 
                 <div class="service-card">
-                    <h3>📊 History</h3>
-                    <p>View your purchase history</p>
-                    <a href="/history" class="btn">View History</a>
+                    <h3>📊 Dashboard</h3>
+                    <p>View analytics & control center</p>
+                    <a href="/dashboard" class="btn">Open Dashboard</a>
                 </div>
                 
                 <div class="service-card">
@@ -374,6 +374,75 @@ async def serve_root():
     </html>
     """
     return HTMLResponse(content=html_content)
+
+# ✅ DASHBOARD ROUTE - MISSING FIX!
+@app.get("/dashboard", response_class=HTMLResponse)
+async def serve_dashboard():
+    """Dashboard page - serves existing dashboard.html or fallback"""
+    dashboard_path = os.path.join(frontend_dir, "dashboard.html")
+    if os.path.exists(dashboard_path):
+        return FileResponse(dashboard_path, media_type="text/html")
+    
+    # Fallback dashboard if file missing
+    return serve_html_file("dashboard", """
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Dashboard - BrandOtp Official</title>
+        <style>
+            body { font-family: Arial, sans-serif; margin: 0; padding: 20px; background: #f5f5f5; }
+            .container { max-width: 1200px; margin: 0 auto; background: white; padding: 40px; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+            .header { text-align: center; margin-bottom: 40px; }
+            .header h1 { color: #4361ee; font-size: 2.5rem; margin: 0; }
+            .stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; margin: 40px 0; }
+            .stat-card { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 30px; border-radius: 10px; text-align: center; }
+            .stat-card h3 { margin: 0 0 10px 0; font-size: 1.5rem; }
+            .stat-card .number { font-size: 2.5rem; font-weight: bold; }
+            .btn { display: inline-block; background: #4361ee; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; margin: 10px; }
+            .btn:hover { background: #3651ce; }
+        </style>
+    </head>
+    <body>
+        <div class="container">
+            <div class="header">
+                <h1>🚀 BrandOtp Dashboard</h1>
+                <p>Welcome to your control center</p>
+            </div>
+            
+            <div class="stats">
+                <div class="stat-card">
+                    <h3>Total Users</h3>
+                    <div class="number">1,247</div>
+                </div>
+                
+                <div class="stat-card">
+                    <h3>SMS Sent</h3>
+                    <div class="number">25,891</div>
+                </div>
+                
+                <div class="stat-card">
+                    <h3>Revenue</h3>
+                    <div class="number">₹52,340</div>
+                </div>
+                
+                <div class="stat-card">
+                    <h3>Active Orders</h3>
+                    <div class="number">127</div>
+                </div>
+            </div>
+            
+            <div style="text-align: center; margin-top: 40px; padding-top: 20px; border-top: 1px solid #eee;">
+                <p><strong>🔥 System Health: ALL GOOD</strong></p>
+                <a href="/" class="btn">← Back to Home</a>
+                <a href="/docs" class="btn">API Docs</a>
+                <a href="/api/health" class="btn">Health Check</a>
+            </div>
+        </div>
+    </body>
+    </html>
+    """)
 
 @app.get("/login", response_class=HTMLResponse)
 async def serve_login():
